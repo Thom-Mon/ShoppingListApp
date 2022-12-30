@@ -14,7 +14,7 @@ class CustomAdapter(private val mList: List<ElementsViewModel>): RecyclerView.Ad
     private var listener: OnItemsClickListener? = null
 
     interface OnItemsClickListener {
-        fun onItemClick(itemsViewModel: ElementsViewModel, buttonId: Int)
+        fun onItemClick(categoryViewModel: ElementsViewModel, buttonId: Int)
     }
 
     fun setWhenClickListener(listener: OnItemsClickListener?) {
@@ -46,7 +46,6 @@ class CustomAdapter(private val mList: List<ElementsViewModel>): RecyclerView.Ad
         return mList.size
     }
 
-    // Holds the views for adding it to image and text
     class ViewHolder(ItemView: View) : RecyclerView.ViewHolder(ItemView) {
         val textView: TextView = itemView.findViewById(R.id.card_category_name)
     }

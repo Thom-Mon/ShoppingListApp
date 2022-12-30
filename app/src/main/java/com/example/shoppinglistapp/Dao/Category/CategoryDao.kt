@@ -9,7 +9,7 @@ import com.example.shoppinglistapp.Dao.Item.Item
 @Dao
 interface CategoryDao {
 
-    @Query("SELECT * FROM item_table")
+    @Query("SELECT * FROM category_table")
     fun getAll(): List<Category>
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
