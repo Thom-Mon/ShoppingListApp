@@ -12,6 +12,7 @@ import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.appcompat.app.AppCompatActivity
+import com.example.shoppinglistapp.Dao.Category.Category
 import com.example.shoppinglistapp.Dao.Item.Item
 import com.example.shoppinglistapp.databinding.ActivityMainBinding
 import com.google.gson.Gson
@@ -55,6 +56,7 @@ class MainActivity : AppCompatActivity() {
         navView.setupWithNavController(navController)
 
         setupDbFromAssets()
+        setupDbCategoriesFromAssets()
     }
 
     fun setupDbFromAssets()
@@ -69,6 +71,22 @@ class MainActivity : AppCompatActivity() {
         GlobalScope.launch(Dispatchers.IO){
             // write contents from JSON-String to DB
             appDb.itemDao().insertAll(loadedData)
+            Log.e("LastEntry",appDb.itemDao().getSequenceNumber("item_table").toString())
+        }
+    }
+
+    fun setupDbCategoriesFromAssets()
+    {
+        // on startup fill RoomDB with data from assets/json
+        var loadedData = ArrayList<Category>()
+        val file = assets?.open("startCategories.txt")?.bufferedReader()
+        val fileContents = file?.readText()
+        val arrayListTutorialType = object : TypeToken<List<Category>>() {}.type
+        loadedData = gson.fromJson(fileContents, arrayListTutorialType)
+
+        GlobalScope.launch(Dispatchers.IO){
+            // write contents from JSON-String to DB
+            appDb.categoryDao().insertAll(loadedData)
             Log.e("LastEntry",appDb.itemDao().getSequenceNumber("item_table").toString())
         }
     }

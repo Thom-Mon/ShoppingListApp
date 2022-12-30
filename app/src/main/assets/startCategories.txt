@@ -1,0 +1,5 @@
+[
+{"name":"Kühltheke","id":null},
+{"name":"Grundnahrungsmittel","id":null},
+{"name":"Wurstwaren","id":null}
+]
