@@ -2,8 +2,6 @@ package com.example.energy_meter_roomdb
 
 import androidx.room.*
 import com.example.shoppinglistapp.Dao.Item.Item
-import java.util.Locale.Category
-
 
 @Dao
 interface ItemDao {
@@ -30,6 +28,11 @@ interface ItemDao {
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insert(item: Item)
 
+    // used for testing, to insert from List on Startup (dummy data)
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    suspend fun insertAll(objects: List<Item>)
+
+
     @Delete
     suspend fun delete(item: Item)
 
@@ -38,7 +41,6 @@ interface ItemDao {
 
     @Query("UPDATE item_table SET name=:name, category=:category, status=:status WHERE id = :id")
     suspend fun update(id: Int, name : String , category: String , status: Int)
-
 
     //get last inserted id
     @Query("SELECT seq FROM sqlite_sequence WHERE name = :tableName")

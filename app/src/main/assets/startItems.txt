@@ -1,0 +1,5 @@
+[
+{"category":"Kühltheke","name":"Schoko-Eis","id":null,"status":"0"},
+{"category":"Kühltheke","name":"Vanille-Eis","id":null,"status":"0"},
+{"category":"Kühltheke","name":"Erdbeer-Eis","id":null,"status":"0"}
+]
