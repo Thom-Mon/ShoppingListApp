@@ -81,7 +81,8 @@ class CategoryFragment : Fragment() {
                                 ElementsViewModel(SpannableStringBuilder(it.name).toString())
                                     )
                         }
-                        adapter.notifyDataSetChanged()
+                        adapter.notifyItemInserted(data.size-1)
+                        binding.recyclerviewCategory.scheduleLayoutAnimation()
                     }
                 }
             }
@@ -98,7 +99,7 @@ class CategoryFragment : Fragment() {
             addCategory()
             binding.entryCategory.text?.clear()
             hideKeyboard()
-            binding.recyclerviewCategory.scheduleLayoutAnimation()
+            //binding.recyclerviewCategory.scheduleLayoutAnimation()
         }
 
         return root
@@ -120,7 +121,7 @@ class CategoryFragment : Fragment() {
             }*/
             withContext(Dispatchers.Main){
                 data.add(ElementsViewModel(category.name!!))
-                adapter.notifyDataSetChanged()
+                adapter.notifyItemInserted(data.size-1)
             }
         }
     }
