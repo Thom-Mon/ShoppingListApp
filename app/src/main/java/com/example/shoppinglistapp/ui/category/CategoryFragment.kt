@@ -1,5 +1,7 @@
 package com.example.shoppinglistapp.ui.category
 
+import android.app.Activity
+import android.content.Context
 import androidx.lifecycle.ViewModelProvider
 import android.os.Bundle
 import android.text.SpannableStringBuilder
@@ -7,8 +9,10 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.InputMethodManager
 import android.widget.LinearLayout
 import android.widget.TextView
+import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.shoppinglistapp.AppDatabase
 import com.example.shoppinglistapp.Dao.Category.Category
@@ -61,6 +65,7 @@ class CategoryFragment : Fragment() {
         recyclerView.adapter = adapter
 
 
+
         lateinit var entries: List<Category>
 
         // Create here the setWhenClickListener für den Adapter
@@ -88,10 +93,50 @@ class CategoryFragment : Fragment() {
             }
         }
         //END
-
-
+        binding.textFieldCategoryEntry.setEndIconOnClickListener{
+            //Toast.makeText(requireContext(), "Endicon Pressed",Toast.LENGTH_LONG).show()
+            addCategory()
+            binding.entryCategory.text?.clear()
+            hideKeyboard()
+            binding.recyclerviewCategory.scheduleLayoutAnimation()
+        }
 
         return root
+    }
+
+    fun addCategory(){
+
+        val name = binding.entryCategory.text
+
+        val category = Category(null, name.toString())
+
+        GlobalScope.launch(Dispatchers.IO){
+            appDb.categoryDao().insert(category)
+
+            //SOLUTION WAS TO USE THE DEFAULT DISPATCH INSTEAD OF THE MAIN OR IO
+            /*withContext(Dispatchers.Default){1
+                entry_after = appDb.entryDao().getSequenceNumber("entry_table")
+                firstEntry =  appDb.entryDao().getFirstEntry()
+            }*/
+            withContext(Dispatchers.Main){
+                data.add(ElementsViewModel(category.name!!))
+                adapter.notifyDataSetChanged()
+            }
+        }
+    }
+
+    // Helpers rebase to activity later!!!!!!
+    fun Fragment.hideKeyboard() {
+        view?.let { activity?.hideKeyboard(it) }
+    }
+
+    fun Activity.hideKeyboard() {
+        hideKeyboard(currentFocus ?: View(this))
+    }
+
+    fun Context.hideKeyboard(view: View) {
+        val inputMethodManager = getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
+        inputMethodManager.hideSoftInputFromWindow(view.windowToken, 0)
     }
 
     override fun onDestroyView() {
