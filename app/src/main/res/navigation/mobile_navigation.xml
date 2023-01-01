@@ -44,6 +44,6 @@
     <fragment
         android:id="@+id/nav_category"
         android:name="com.example.shoppinglistapp.ui.category.CategoryFragment"
-        android:label="fragment_category"
+        android:label="@string/fragment_headline_category"
         tools:layout="@layout/fragment_category" />
 </navigation>

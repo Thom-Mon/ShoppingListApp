@@ -5,6 +5,7 @@ import android.content.Context
 import androidx.lifecycle.ViewModelProvider
 import android.os.Bundle
 import android.text.SpannableStringBuilder
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -51,10 +52,10 @@ class CategoryFragment : Fragment() {
         _binding = FragmentCategoryBinding.inflate(inflater, container, false)
         val root: View = binding.root
 
-        val textView: TextView = binding.textCategory
+        /*val textView: TextView = binding.textCategory
         categoryViewModel.text.observe(viewLifecycleOwner) {
             textView.text = it
-        }
+        }*/
         // code here
 
         appDb = AppDatabase.getDatabase(requireContext())
@@ -64,7 +65,20 @@ class CategoryFragment : Fragment() {
 
         recyclerView.adapter = adapter
 
-
+        adapter.setWhenClickListener(object : CustomAdapter.OnItemsClickListener {
+            override fun onItemClick(elementsViewModel: ElementsViewModel, buttonId: Int) {
+                // the button id refers to either delete or edit from the recyclerview
+                if(buttonId == 1){
+                    Log.e("Button","Button 1 pressed")
+                }
+                else if(buttonId == 0){
+                    Log.e("Button","Button 0 pressed (DELETION)")
+                    GlobalScope.launch {
+                        deleteData(elementsViewModel.id.toInt())
+                    }
+                }
+            }
+        })
 
         lateinit var entries: List<Category>
 
@@ -78,7 +92,7 @@ class CategoryFragment : Fragment() {
                     if (entries != null) {
                         entries.forEach {
                             data.add(
-                                ElementsViewModel(SpannableStringBuilder(it.name).toString())
+                                ElementsViewModel(it.id!!,SpannableStringBuilder(it.name).toString())
                                     )
                         }
                         adapter.notifyItemInserted(data.size-1)
@@ -96,10 +110,12 @@ class CategoryFragment : Fragment() {
         //END
         binding.textFieldCategoryEntry.setEndIconOnClickListener{
             //Toast.makeText(requireContext(), "Endicon Pressed",Toast.LENGTH_LONG).show()
-            addCategory()
-            binding.entryCategory.text?.clear()
-            hideKeyboard()
-            //binding.recyclerviewCategory.scheduleLayoutAnimation()
+            if(binding.entryCategory.text!!.isNotEmpty())
+            {
+                addCategory()
+                binding.entryCategory.text?.clear()
+                hideKeyboard()
+            }
         }
 
         return root
@@ -108,19 +124,14 @@ class CategoryFragment : Fragment() {
     fun addCategory(){
 
         val name = binding.entryCategory.text
-
         val category = Category(null, name.toString())
 
         GlobalScope.launch(Dispatchers.IO){
             appDb.categoryDao().insert(category)
+            val lastInsertedId = appDb.categoryDao().getSequenceNumber("category_table")?.toInt()
 
-            //SOLUTION WAS TO USE THE DEFAULT DISPATCH INSTEAD OF THE MAIN OR IO
-            /*withContext(Dispatchers.Default){1
-                entry_after = appDb.entryDao().getSequenceNumber("entry_table")
-                firstEntry =  appDb.entryDao().getFirstEntry()
-            }*/
             withContext(Dispatchers.Main){
-                data.add(ElementsViewModel(category.name!!))
+                data.add(ElementsViewModel(lastInsertedId!!, category.name!!))
                 adapter.notifyItemInserted(data.size-1)
             }
         }
@@ -140,6 +151,25 @@ class CategoryFragment : Fragment() {
         inputMethodManager.hideSoftInputFromWindow(view.windowToken, 0)
     }
 
+    private suspend fun deleteData(_id: Int) {
+        val category: Category
+        var dataId = 0
+        category = appDb.categoryDao().findById(_id)
+        appDb.categoryDao().delete(category)
+
+        for(category in data)
+        {
+            if(category.id.toInt() == _id)
+            {
+                break;
+            }
+            dataId++
+        }
+        withContext(Dispatchers.Main){
+            data.removeAt(dataId)
+            adapter.notifyItemRemoved(dataId)
+        }
+    }
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null

@@ -6,18 +6,22 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import android.widget.Toast
+import androidx.core.content.ContentProviderCompat.requireContext
 import androidx.recyclerview.widget.RecyclerView
 import com.example.shoppinglistapp.R
+import java.security.AccessController.getContext
 
 class CustomAdapter(private val mList: List<ElementsViewModel>): RecyclerView.Adapter<CustomAdapter.ViewHolder>() {
 
     private var listener: OnItemsClickListener? = null
 
     interface OnItemsClickListener {
-        fun onItemClick(categoryViewModel: ElementsViewModel, buttonId: Int)
+        fun onItemClick(elementsViewModel: ElementsViewModel, buttonId: Int)
     }
 
     fun setWhenClickListener(listener: OnItemsClickListener?) {
+        Log.e("Button", "Function Called in Adapter")
         this.listener = listener
     }
 
@@ -35,10 +39,19 @@ class CustomAdapter(private val mList: List<ElementsViewModel>): RecyclerView.Ad
     // binds the list items to a view
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
 
-        val ElementsViewModel = mList[position]
+        val elementsViewModel = mList[position]
 
         // sets the text to the textview from our itemHolder class
-        holder.textView.text = ElementsViewModel.name
+
+
+        holder.deleteCard.setOnClickListener(View.OnClickListener {
+            Log.e("Tag", elementsViewModel.name)
+            if (listener != null) {
+                listener!!.onItemClick(elementsViewModel, 0)
+            }
+        })
+
+        holder.textView.text = elementsViewModel.name
     }
 
     // return the number of the items in the list
@@ -48,5 +61,6 @@ class CustomAdapter(private val mList: List<ElementsViewModel>): RecyclerView.Ad
 
     class ViewHolder(ItemView: View) : RecyclerView.ViewHolder(ItemView) {
         val textView: TextView = itemView.findViewById(R.id.card_category_name)
+        val deleteCard: ImageView = itemView.findViewById(R.id.delete_on_card_view)
     }
 }
