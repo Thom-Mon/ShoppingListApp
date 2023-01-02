@@ -15,4 +15,5 @@
     <string name="menu_standard">Standards</string>
     <string name="menu_category">Kategorien</string>
     <string name="add_category">Neue Kategorie</string>
+    <string name="fragment_headline_category">Kategorieübersicht</string>
 </resources>
