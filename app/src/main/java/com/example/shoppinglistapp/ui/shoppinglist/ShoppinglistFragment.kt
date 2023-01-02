@@ -1,16 +1,17 @@
 package com.example.shoppinglistapp.ui.shoppinglist
 
-import androidx.lifecycle.ViewModelProvider
 import android.os.Bundle
-import androidx.fragment.app.Fragment
+import android.util.Log
+import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
+import android.widget.*
+import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModelProvider
 import com.example.shoppinglistapp.R
-import com.example.shoppinglistapp.databinding.FragmentGalleryBinding
 import com.example.shoppinglistapp.databinding.FragmentShoppinglistBinding
-import com.example.shoppinglistapp.ui.gallery.GalleryViewModel
+
 
 class ShoppinglistFragment : Fragment() {
 
@@ -35,7 +36,24 @@ class ShoppinglistFragment : Fragment() {
         shoppinglistViewModel.text.observe(viewLifecycleOwner) {
             textView.text = it
         }
+
+        buildShoppingList()
+
         return root
+    }
+
+    private fun buildShoppingList() {
+        val layout = binding.layoutShoppingList
+
+        // add dynamically to shoppingList
+        val button = Button(context)
+
+        // setting layout_width and layout_height using layout parameters
+        button.layoutParams = LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT)
+        button.text = "Kategorie"
+
+        // add Button to LinearLayout
+        layout.addView(button)
     }
 
     override fun onDestroyView() {
