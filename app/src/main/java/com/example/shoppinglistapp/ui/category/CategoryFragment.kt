@@ -122,9 +122,12 @@ class CategoryFragment : Fragment() {
 
         binding.entryCategory.setOnKeyListener(View.OnKeyListener { v, keyCode, event ->
             if (keyCode == KeyEvent.KEYCODE_ENTER && event.action == KeyEvent.ACTION_UP) {
-                addCategory()
-                binding.entryCategory.text?.clear()
-                hideKeyboard()
+                if(binding.entryCategory.text!!.isNotEmpty())
+                {
+                    addCategory()
+                    binding.entryCategory.text?.clear()
+                    hideKeyboard()
+                }
 
                 return@OnKeyListener true
             }
