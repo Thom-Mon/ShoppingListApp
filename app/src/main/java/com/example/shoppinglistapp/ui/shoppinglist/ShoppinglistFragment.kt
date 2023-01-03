@@ -1,12 +1,14 @@
 package com.example.shoppinglistapp.ui.shoppinglist
 
+import android.app.Activity
+import android.content.Context
 import android.os.Bundle
-import android.text.SpannableString
-import android.text.style.UnderlineSpan
 import android.util.Log
+import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.InputMethodManager
 import android.widget.*
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
@@ -58,12 +60,13 @@ class ShoppinglistFragment : Fragment() {
                     if (categories != null)
                     {
                         categories.forEach {
-                            items = appDb.itemDao().findByCategory(it.name!!)
+                            items = appDb.itemDao().findByCategoryWithStatus(it.name!!,0)
 
                             addCategory(it.name)
                             for (item in items) {
-                                addItem(item.name)
+                                addItem(item)
                             }
+                            addPlusButton(it)
                         }
                     }
                 }
@@ -81,20 +84,23 @@ class ShoppinglistFragment : Fragment() {
         return root
     }
 
-    private fun addItem(name: String?) {
+    private fun addItem(item: Item, index: Int = 0) {
 
         val product_layout = getLayoutInflater().inflate(R.layout.product_linearlayout, null, false)
         val shoppinglist_layout = binding.layoutShoppingList
 
-        product_layout.findViewById<TextView>(R.id.textView_product).text = name
+        product_layout.findViewById<TextView>(R.id.textView_product).text = item.name
 
         //get the checkbox to do something on checked
         product_layout.findViewById<CheckBox>(R.id.deletion_checkbox).setOnCheckedChangeListener {
                 compoundButton, b -> Log.e("Checkbox", "Checkbox changed")
-
-                shoppinglist_layout.removeView(product_layout)
+                removeItem(product_layout, item.id!!)
         }
-
+        if(index != 0)
+        {
+            shoppinglist_layout.addView(product_layout, index);
+            return
+        }
         shoppinglist_layout.addView(product_layout);
     }
 
@@ -108,14 +114,80 @@ class ShoppinglistFragment : Fragment() {
         shoppinglist_layout.addView(product_layout);
     }
 
-    private fun removeItem(view: View, id: Int)
+    private fun addPlusButton(category: Category)
     {
+        val addProduct_layout = getLayoutInflater().inflate(R.layout.add_product_linearlayout, null, false)
+        val shoppinglist_layout = binding.layoutShoppingList
 
+        val productname = addProduct_layout.findViewById<EditText>(R.id.editText_Item_Name).text
+
+        shoppinglist_layout.addView(addProduct_layout);
+
+        addProduct_layout.findViewById<ImageButton>(R.id.add_Item).setOnClickListener {
+            if(productname.isNotEmpty())
+            {
+                val newItem = Item(null, productname.toString(), category.name,0 )
+                productname.clear()
+                hideKeyboard()
+                // add the item just before the plus-button position
+                addItem(newItem, shoppinglist_layout.indexOfChild(addProduct_layout))
+                addProduct(newItem)
+            }
+        }
+        // on pressing enter within the edittext field for better usability
+        addProduct_layout.findViewById<EditText>(R.id.editText_Item_Name).setOnKeyListener(View.OnKeyListener { v, keyCode, event ->
+            if (keyCode == KeyEvent.KEYCODE_ENTER && event.action == KeyEvent.ACTION_UP) {
+                if(productname.isNotEmpty())
+                {
+                    val newItem = Item(null, productname.toString(), category.name,0 )
+                    productname.clear()
+                    hideKeyboard()
+                    // add the item just before the plus-button position
+                    addItem(newItem, shoppinglist_layout.indexOfChild(addProduct_layout))
+                    addProduct(newItem)
+                }
+
+                return@OnKeyListener true
+            }
+            false
+        })
+    }
+
+    private fun addProduct(item: Item)
+    {
+        GlobalScope.launch {
+            appDb.itemDao().insert(item)
+            //deleteData(elementsViewModel.id.toInt())
+        }
+    }
+
+    private fun removeItem(view: View, id: Int )
+    {
+        binding.layoutShoppingList.removeView(view)
+
+        GlobalScope.launch {
+            appDb.itemDao().updateStatus(id,1)
+            //deleteData(elementsViewModel.id.toInt())
+        }
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+    }
+
+    // Helpers rebase to activity later!!!!!!
+    fun Fragment.hideKeyboard() {
+        view?.let { activity?.hideKeyboard(it) }
+    }
+
+    fun Activity.hideKeyboard() {
+        hideKeyboard(currentFocus ?: View(this))
+    }
+
+    fun Context.hideKeyboard(view: View) {
+        val inputMethodManager = getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
+        inputMethodManager.hideSoftInputFromWindow(view.windowToken, 0)
     }
 
 }

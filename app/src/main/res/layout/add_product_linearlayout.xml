@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    >
+    <ImageButton
+        android:id="@+id/add_Item"
+        android:src="@drawable/ic_baseline_add_circle_outline_24"
+        android:background="@null"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Placeholder-Categoryname"
+        android:layout_margin="20dp"
+        />
+    <EditText
+        android:id="@+id/editText_Item_Name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:hint="Produktname eingeben"
+        android:singleLine="true"
+        android:maxLength="20"
+        android:layout_marginTop="5dp"
+        />
+</LinearLayout>

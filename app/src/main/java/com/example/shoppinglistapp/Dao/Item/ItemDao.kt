@@ -12,6 +12,9 @@ interface ItemDao {
     @Query("SELECT * FROM item_table WHERE category LIKE :category")
     suspend fun findByCategory(category: String): List<Item>
 
+    @Query("SELECT * FROM item_table WHERE category LIKE :category AND status LIKE :status")
+    suspend fun findByCategoryWithStatus(category: String, status: Int): List<Item>
+
     @Query("SELECT * FROM item_table WHERE category LIKE :status")
     suspend fun findByStatus(status: Int): List<Item>
 
@@ -41,6 +44,9 @@ interface ItemDao {
 
     @Query("UPDATE item_table SET name=:name, category=:category, status=:status WHERE id = :id")
     suspend fun update(id: Int, name : String , category: String , status: Int)
+
+    @Query("UPDATE item_table SET status=:status WHERE id = :id")
+    suspend fun updateStatus(id: Int, status: Int)
 
     //get last inserted id
     @Query("SELECT seq FROM sqlite_sequence WHERE name = :tableName")
