@@ -4,14 +4,13 @@ import android.app.Activity
 import android.content.Context
 import android.os.Bundle
 import android.util.Log
-import android.view.KeyEvent
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import android.view.inputmethod.InputMethodManager
 import android.widget.*
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import androidx.transition.Slide
+import androidx.transition.TransitionManager
 import com.example.shoppinglistapp.AppDatabase
 import com.example.shoppinglistapp.Dao.Category.Category
 import com.example.shoppinglistapp.Dao.Item.Item
@@ -103,10 +102,10 @@ class ShoppinglistFragment : Fragment() {
 
         //get the checkbox to do something on checked
         product_layout.findViewById<CheckBox>(R.id.deletion_checkbox).setOnCheckedChangeListener {
+            compoundButton, b -> Log.e("Checkbox", "Checkbox changed")
+            removeItem(product_layout, item.id!!)
 
-                compoundButton, b -> Log.e("Checkbox", "Checkbox changed")
-                removeItem(product_layout, item.id!!)
-                Log.e("Button", "Id: " + item.id!!)
+            Log.e("Button", "Id: " + item.id!!)
         }
         if(index != 0)
         {
@@ -195,6 +194,7 @@ class ShoppinglistFragment : Fragment() {
 
     private fun removeItem(view: View, id: Int )
     {
+        animationSlideInText(view,true, 500)
         binding.layoutShoppingList.removeView(view)
 
         GlobalScope.launch {
@@ -220,6 +220,27 @@ class ShoppinglistFragment : Fragment() {
     fun Context.hideKeyboard(view: View) {
         val inputMethodManager = getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
         inputMethodManager.hideSoftInputFromWindow(view.windowToken, 0)
+    }
+
+    private fun animationSlideInText(_view: View, fromLeft: Boolean = false, duration: Long = 250)
+    {
+        _view.visibility = View.INVISIBLE
+
+        val mSlide = Slide()
+        mSlide.duration = duration
+
+        if(fromLeft)
+        {
+            mSlide.slideEdge = Gravity.LEFT
+        }
+        else
+        {
+            mSlide.slideEdge = Gravity.RIGHT
+        }
+
+        TransitionManager.beginDelayedTransition((view as ViewGroup?)!!, mSlide)
+
+        _view.visibility = View.VISIBLE
     }
 
 }
