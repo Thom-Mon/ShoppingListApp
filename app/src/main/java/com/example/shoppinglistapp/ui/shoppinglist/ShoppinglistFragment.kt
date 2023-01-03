@@ -3,8 +3,10 @@ package com.example.shoppinglistapp.ui.shoppinglist
 import android.app.Activity
 import android.content.Context
 import android.os.Bundle
+import android.os.Handler
 import android.util.Log
 import android.view.*
+import android.view.animation.AnimationUtils
 import android.view.inputmethod.InputMethodManager
 import android.widget.*
 import androidx.fragment.app.Fragment
@@ -194,8 +196,11 @@ class ShoppinglistFragment : Fragment() {
 
     private fun removeItem(view: View, id: Int )
     {
-        animationSlideInText(view,true, 500)
+        val animationFadeOut = AnimationUtils.loadAnimation(context, R.anim.item_animation_zoom)
+        view.startAnimation(animationFadeOut)
+        Handler().postDelayed({
         binding.layoutShoppingList.removeView(view)
+        }, 300)
 
         GlobalScope.launch {
             appDb.itemDao().updateStatus(id,1)
@@ -236,6 +241,28 @@ class ShoppinglistFragment : Fragment() {
         else
         {
             mSlide.slideEdge = Gravity.RIGHT
+        }
+
+        TransitionManager.beginDelayedTransition((view as ViewGroup?)!!, mSlide)
+
+        _view.visibility = View.VISIBLE
+    }
+
+    // unused TODO: remove if not needed
+    private fun animationInText(_view: View, fromLeft: Boolean = false, duration: Long = 250)
+    {
+        _view.visibility = View.INVISIBLE
+
+        val mSlide = Slide()
+        mSlide.duration = duration
+
+        if(fromLeft)
+        {
+            mSlide.slideEdge = Gravity.TOP
+        }
+        else
+        {
+            mSlide.slideEdge = Gravity.TOP
         }
 
         TransitionManager.beginDelayedTransition((view as ViewGroup?)!!, mSlide)

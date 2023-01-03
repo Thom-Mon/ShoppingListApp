@@ -26,7 +26,7 @@
     <fragment
         android:id="@+id/nav_shoppinglist"
         android:name="com.example.shoppinglistapp.ui.shoppinglist.ShoppinglistFragment"
-        android:label="fragment_shoppinglist"
+        android:label="@string/fragment_headline_shoppinglist"
         tools:layout="@layout/fragment_shoppinglist" />
 
     <fragment

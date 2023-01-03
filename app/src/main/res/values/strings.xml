@@ -2,7 +2,7 @@
     <string name="app_name">ShoppingListApp</string>
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
-    <string name="nav_header_title">Titel??</string>
+    <string name="nav_header_title">Einkaufslisten - App</string>
     <string name="nav_header_subtitle">Thg Illusions 2022 - reset_all@agmx.de</string>
     <string name="nav_header_desc">Navigation header</string>
     <string name="action_settings">Settings</string>
@@ -16,4 +16,6 @@
     <string name="menu_category">Kategorien</string>
     <string name="add_category">Neue Kategorie</string>
     <string name="fragment_headline_category">Kategorieübersicht</string>
+    <string name="fragment_headline_shoppinglist">Einkaufsliste</string>
+    <string name="app_version">v1.0</string>
 </resources>
