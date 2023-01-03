@@ -17,6 +17,7 @@ import com.example.shoppinglistapp.Dao.Category.Category
 import com.example.shoppinglistapp.Dao.Item.Item
 import com.example.shoppinglistapp.R
 import com.example.shoppinglistapp.databinding.FragmentShoppinglistBinding
+import com.google.android.material.internal.ViewUtils.hideKeyboard
 import com.google.gson.Gson
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
@@ -28,7 +29,9 @@ class ShoppinglistFragment : Fragment() {
 
     private var _binding: FragmentShoppinglistBinding? = null
     private  lateinit var appDb : AppDatabase
+    private var lastInsertedItem = Item(7777,"Fruchttiger","Grundnahrungsmittel",0)
     private val gson = Gson()
+
 
     // This property is only valid between onCreateView and
     // onDestroyView.
@@ -85,6 +88,13 @@ class ShoppinglistFragment : Fragment() {
     }
 
     private fun addItem(item: Item, index: Int = 0) {
+        if(item.id == null){
+            Log.i("Button", "Item Id is null")
+            Log.i("Button", "LastInserted: " + getLastInsertedId())
+            Thread.sleep(550)
+            Log.i("Button", "LastInsertedFromGlobal: " + lastInsertedItem.id)
+            return
+        }
 
         val product_layout = getLayoutInflater().inflate(R.layout.product_linearlayout, null, false)
         val shoppinglist_layout = binding.layoutShoppingList
@@ -93,8 +103,10 @@ class ShoppinglistFragment : Fragment() {
 
         //get the checkbox to do something on checked
         product_layout.findViewById<CheckBox>(R.id.deletion_checkbox).setOnCheckedChangeListener {
+
                 compoundButton, b -> Log.e("Checkbox", "Checkbox changed")
                 removeItem(product_layout, item.id!!)
+                Log.e("Button", "Id: " + item.id!!)
         }
         if(index != 0)
         {
@@ -114,10 +126,28 @@ class ShoppinglistFragment : Fragment() {
         shoppinglist_layout.addView(product_layout);
     }
 
+    private fun getLastInsertedId(){
+        lateinit var items: List<Item>
+
+        GlobalScope.launch {
+            items = appDb.itemDao().getLastInsertedItem()
+            //deleteData(elementsViewModel.id.toInt())
+
+            withContext(Dispatchers.Main) {
+                if (items.isNotEmpty()) {
+                    Log.e("Button", "LastInserted: " + items[0].id)
+                    lastInsertedItem = items[0]
+                }
+            }
+        }
+
+    }
+
     private fun addPlusButton(category: Category)
     {
         val addProduct_layout = getLayoutInflater().inflate(R.layout.add_product_linearlayout, null, false)
         val shoppinglist_layout = binding.layoutShoppingList
+        getLastInsertedId()
 
         val productname = addProduct_layout.findViewById<EditText>(R.id.editText_Item_Name).text
 
@@ -126,12 +156,13 @@ class ShoppinglistFragment : Fragment() {
         addProduct_layout.findViewById<ImageButton>(R.id.add_Item).setOnClickListener {
             if(productname.isNotEmpty())
             {
-                val newItem = Item(null, productname.toString(), category.name,0 )
+                val newItem = Item(lastInsertedItem.id, productname.toString(), category.name,0 )
                 productname.clear()
                 hideKeyboard()
                 // add the item just before the plus-button position
-                addItem(newItem, shoppinglist_layout.indexOfChild(addProduct_layout))
                 addProduct(newItem)
+                addItem(newItem, shoppinglist_layout.indexOfChild(addProduct_layout))
+
             }
         }
         // on pressing enter within the edittext field for better usability
@@ -139,12 +170,13 @@ class ShoppinglistFragment : Fragment() {
             if (keyCode == KeyEvent.KEYCODE_ENTER && event.action == KeyEvent.ACTION_UP) {
                 if(productname.isNotEmpty())
                 {
-                    val newItem = Item(null, productname.toString(), category.name,0 )
+                    val newItem = Item(lastInsertedItem.id, productname.toString(), category.name,0 )
                     productname.clear()
                     hideKeyboard()
                     // add the item just before the plus-button position
-                    addItem(newItem, shoppinglist_layout.indexOfChild(addProduct_layout))
                     addProduct(newItem)
+                    addItem(newItem, shoppinglist_layout.indexOfChild(addProduct_layout))
+
                 }
 
                 return@OnKeyListener true

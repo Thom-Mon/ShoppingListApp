@@ -48,6 +48,10 @@ interface ItemDao {
     @Query("UPDATE item_table SET status=:status WHERE id = :id")
     suspend fun updateStatus(id: Int, status: Int)
 
+    //get last inserted Object
+    @Query("SELECT * FROM item_table WHERE status LIKE 0 ORDER BY id DESC LIMIT 1")
+    fun getLastInsertedItem(): List<Item>
+
     //get last inserted id
     @Query("SELECT seq FROM sqlite_sequence WHERE name = :tableName")
     abstract fun getSequenceNumber(tableName: String): Long?
