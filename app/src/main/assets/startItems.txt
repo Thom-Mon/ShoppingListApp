@@ -1,5 +1,15 @@
 [
 {"category":"Kühltheke","name":"Schoko-Eis","id":null,"status":"0"},
 {"category":"Kühltheke","name":"Vanille-Eis","id":null,"status":"0"},
-{"category":"Kühltheke","name":"Erdbeer-Eis","id":null,"status":"0"}
+{"category":"Kühltheke","name":"Erdbeer-Eis","id":null,"status":"0"},
+{"category":"Wurstwaren","name":"Frankfurter","id":null,"status":"0"},
+{"category":"Wurstwaren","name":"Deutschländer","id":null,"status":"0"},
+{"category":"Wurstwaren","name":"Bockwurst","id":null,"status":"0"},
+{"category":"Wurstwaren","name":"Schinken Serano","id":null,"status":"0"},
+{"category":"Wurstwaren","name":"Hackfleisch","id":null,"status":"0"},
+{"category":"Wurstwaren","name":"Rindersteak","id":null,"status":"0"},
+{"category":"Grundnahrungsmittel","name":"Brot","id":null,"status":"0"},
+{"category":"Grundnahrungsmittel","name":"Milch","id":null,"status":"0"},
+{"category":"Grundnahrungsmittel","name":"Eier","id":null,"status":"0"},
+{"category":"Grundnahrungsmittel","name":"Toast","id":null,"status":"0"}
 ]

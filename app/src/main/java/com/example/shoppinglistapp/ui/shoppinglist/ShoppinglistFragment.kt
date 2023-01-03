@@ -3,6 +3,7 @@ package com.example.shoppinglistapp.ui.shoppinglist
 import android.os.Bundle
 import android.text.SpannableString
 import android.text.style.UnderlineSpan
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -42,10 +43,7 @@ class ShoppinglistFragment : Fragment() {
         _binding = FragmentShoppinglistBinding.inflate(inflater, container, false)
         val root: View = binding.root
 
-        val textView: TextView = binding.textShopping
-        shoppinglistViewModel.text.observe(viewLifecycleOwner) {
-            textView.text = it
-        }
+
         appDb = AppDatabase.getDatabase(requireContext())
 
         lateinit var categories: List<Category>
@@ -90,6 +88,13 @@ class ShoppinglistFragment : Fragment() {
 
         product_layout.findViewById<TextView>(R.id.textView_product).text = name
 
+        //get the checkbox to do something on checked
+        product_layout.findViewById<CheckBox>(R.id.deletion_checkbox).setOnCheckedChangeListener {
+                compoundButton, b -> Log.e("Checkbox", "Checkbox changed")
+
+                shoppinglist_layout.removeView(product_layout)
+        }
+
         shoppinglist_layout.addView(product_layout);
     }
 
@@ -101,6 +106,11 @@ class ShoppinglistFragment : Fragment() {
         product_layout.findViewById<TextView>(R.id.textView_category).text = name
 
         shoppinglist_layout.addView(product_layout);
+    }
+
+    private fun removeItem(view: View, id: Int)
+    {
+
     }
 
     override fun onDestroyView() {
