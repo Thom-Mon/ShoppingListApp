@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModelProvider
 import android.os.Bundle
 import android.text.SpannableStringBuilder
 import android.util.Log
+import android.view.KeyEvent
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -17,6 +18,7 @@ import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.shoppinglistapp.AppDatabase
 import com.example.shoppinglistapp.Dao.Category.Category
+import com.example.shoppinglistapp.Dao.Item.Item
 import com.example.shoppinglistapp.R
 import com.example.shoppinglistapp.adapter.CustomAdapter
 import com.example.shoppinglistapp.adapter.ElementsViewModel
@@ -117,6 +119,17 @@ class CategoryFragment : Fragment() {
                 hideKeyboard()
             }
         }
+
+        binding.entryCategory.setOnKeyListener(View.OnKeyListener { v, keyCode, event ->
+            if (keyCode == KeyEvent.KEYCODE_ENTER && event.action == KeyEvent.ACTION_UP) {
+                addCategory()
+                binding.entryCategory.text?.clear()
+                hideKeyboard()
+
+                return@OnKeyListener true
+            }
+            false
+        })
 
         return root
     }
