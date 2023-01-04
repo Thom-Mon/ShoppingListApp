@@ -3,7 +3,8 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="horizontal"
-    android:layout_margin="5dp">
+    android:layout_margin="5dp"
+    >
 
     <ImageButton
         android:id="@+id/button_reuse_item"
@@ -32,6 +33,6 @@
         android:layout_gravity="center_vertical"
         android:layout_marginLeft="15dp"
         android:textColor="@color/light_grey"
-        android:textSize="20dp"/>
+        android:textSize="18dp"/>
 
 </LinearLayout>

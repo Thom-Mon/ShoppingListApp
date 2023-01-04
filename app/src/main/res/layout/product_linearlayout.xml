@@ -1,14 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:orientation="horizontal">
+    android:layout_height="25dp"
+    android:orientation="horizontal"
+    android:layout_marginTop="0dp">
 
     <androidx.appcompat.widget.AppCompatCheckBox
         android:id="@+id/deletion_checkbox"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="15dp"
+        android:layout_height="25dp"
+        android:layout_marginLeft="10dp"
         />
     <TextView
         android:id="@+id/textView_product"
@@ -17,6 +18,6 @@
         android:text="Placeholder-Productname"
 
         android:textColor="@color/black"
-        android:textSize="20dp"/>
+        android:textSize="15dp"/>
 
 </LinearLayout>
