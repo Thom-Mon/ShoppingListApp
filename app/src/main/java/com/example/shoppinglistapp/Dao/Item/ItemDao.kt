@@ -9,6 +9,9 @@ interface ItemDao {
     @Query("SELECT * FROM item_table")
     fun getAll(): List<Item>
 
+    @Query("SELECT * FROM item_table Limit 1")
+    fun getOne(): Item
+
     @Query("SELECT * FROM item_table WHERE category LIKE :category")
     suspend fun findByCategory(category: String): List<Item>
 

@@ -28,6 +28,7 @@ class MainActivity : AppCompatActivity() {
     private  lateinit var appDb : AppDatabase
     private val gson = Gson()
 
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -54,42 +55,9 @@ class MainActivity : AppCompatActivity() {
         )
         setupActionBarWithNavController(navController, appBarConfiguration)
         navView.setupWithNavController(navController)
-
-        setupDbFromAssets()
-        setupDbCategoriesFromAssets()
     }
 
-    fun setupDbFromAssets()
-    {
-        // on startup fill RoomDB with data from assets/json
-        var loadedData = ArrayList<Item>()
-        val file = assets?.open("startItems.txt")?.bufferedReader()
-        val fileContents = file?.readText()
-        val arrayListTutorialType = object : TypeToken<List<Item>>() {}.type
-        loadedData = gson.fromJson(fileContents, arrayListTutorialType)
 
-        GlobalScope.launch(Dispatchers.IO){
-            // write contents from JSON-String to DB
-            appDb.itemDao().insertAll(loadedData)
-            Log.e("LastEntry",appDb.itemDao().getSequenceNumber("item_table").toString())
-        }
-    }
-
-    fun setupDbCategoriesFromAssets()
-    {
-        // on startup fill RoomDB with data from assets/json
-        var loadedData = ArrayList<Category>()
-        val file = assets?.open("startCategories.txt")?.bufferedReader()
-        val fileContents = file?.readText()
-        val arrayListTutorialType = object : TypeToken<List<Category>>() {}.type
-        loadedData = gson.fromJson(fileContents, arrayListTutorialType)
-
-        GlobalScope.launch(Dispatchers.IO){
-            // write contents from JSON-String to DB
-            appDb.categoryDao().insertAll(loadedData)
-            Log.e("LastEntry",appDb.itemDao().getSequenceNumber("item_table").toString())
-        }
-    }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         // Inflate the menu; this adds items to the action bar if it is present.
