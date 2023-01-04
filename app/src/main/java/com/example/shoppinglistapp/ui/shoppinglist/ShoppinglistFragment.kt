@@ -157,7 +157,7 @@ class ShoppinglistFragment : Fragment() {
         addProduct_layout.findViewById<ImageButton>(R.id.add_Item).setOnClickListener {
             if(productname.isNotEmpty())
             {
-                val newItem = Item(lastInsertedItem.id, productname.toString(), category.name,0 )
+                val newItem = Item(lastInsertedItem.id?.plus(1), productname.toString(), category.name,0 )
                 productname.clear()
                 hideKeyboard()
                 // add the item just before the plus-button position
@@ -171,7 +171,7 @@ class ShoppinglistFragment : Fragment() {
             if (keyCode == KeyEvent.KEYCODE_ENTER && event.action == KeyEvent.ACTION_UP) {
                 if(productname.isNotEmpty())
                 {
-                    val newItem = Item(lastInsertedItem.id, productname.toString(), category.name,0 )
+                    val newItem = Item(lastInsertedItem.id?.plus(1), productname.toString(), category.name,0 )
                     productname.clear()
                     hideKeyboard()
                     // add the item just before the plus-button position
@@ -188,9 +188,9 @@ class ShoppinglistFragment : Fragment() {
 
     private fun addProduct(item: Item)
     {
+        Log.e("Button", "Add Producted called")
         GlobalScope.launch {
             appDb.itemDao().insert(item)
-            //deleteData(elementsViewModel.id.toInt())
         }
     }
 
