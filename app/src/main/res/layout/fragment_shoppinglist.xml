@@ -4,13 +4,11 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_height="match_parent"
     android:layout_width="match_parent">
-<LinearLayout
-    android:id="@+id/layout_shoppingList"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical"
-    tools:context=".ui.shoppinglist.ShoppinglistFragment">
-
-
-</LinearLayout>
+    <LinearLayout
+        android:id="@+id/layout_shoppingList"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        tools:context=".ui.shoppinglist.ShoppinglistFragment">
+    </LinearLayout>
 </ScrollView>
