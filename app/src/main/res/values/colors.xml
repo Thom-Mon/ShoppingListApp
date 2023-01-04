@@ -9,5 +9,7 @@
     <color name="white">#FFFFFFFF</color>
     <color name="color_headline">#7A2626</color>
     <color name="color_menue_phone">#300715</color>
+    <color name="light_grey">#787878</color>
+
 
 </resources>

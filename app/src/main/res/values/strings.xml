@@ -18,4 +18,5 @@
     <string name="fragment_headline_category">Kategorieübersicht</string>
     <string name="fragment_headline_shoppinglist">Einkaufsliste</string>
     <string name="app_version">v1.0</string>
+    <string name="fragment_headline_standard">Standards wiederherstellen</string>
 </resources>
