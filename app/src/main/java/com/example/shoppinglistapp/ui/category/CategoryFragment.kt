@@ -13,6 +13,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.shoppinglistapp.AppDatabase
 import com.example.shoppinglistapp.Dao.Category.Category
+import com.example.shoppinglistapp.Dao.Item.Item
 import com.example.shoppinglistapp.adapter.CustomAdapter
 import com.example.shoppinglistapp.adapter.ElementsViewModel
 import com.example.shoppinglistapp.databinding.FragmentCategoryBinding
@@ -176,9 +177,13 @@ class CategoryFragment : Fragment() {
 
     private suspend fun deleteData(_id: Int) {
         val category: Category
+        lateinit var items: List<Item>
         var dataId = 0
         category = appDb.categoryDao().findById(_id)
+        items = appDb.itemDao().findByCategory(category.name!!)
         appDb.categoryDao().delete(category)
+        // delete all products connected to the category
+        appDb.itemDao().deleteItems(items)
 
         for(category in data)
         {

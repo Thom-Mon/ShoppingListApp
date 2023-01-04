@@ -7,7 +7,7 @@ import com.example.shoppinglistapp.Dao.Item.Item
 interface ItemDao {
 
     @Query("SELECT * FROM item_table")
-    fun getAll(): List<Item>
+    suspend fun getAll(): List<Item>
 
     @Query("SELECT * FROM item_table Limit 1")
     fun getOne(): Item
@@ -44,6 +44,9 @@ interface ItemDao {
 
     @Query("DELETE FROM item_table")
     suspend fun  deleteAll()
+
+    @Delete
+    suspend fun deleteItems(objects: List<Item>)
 
     @Query("UPDATE item_table SET name=:name, category=:category, status=:status WHERE id = :id")
     suspend fun update(id: Int, name : String , category: String , status: Int)

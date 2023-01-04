@@ -12,5 +12,5 @@
         android:gravity="center"
         android:textColor="@color/black"
         android:backgroundTint="@color/cardview_shadow_end_color"
-        android:textSize="25dp"/>
+        android:textSize="20dp"/>
 </LinearLayout>
