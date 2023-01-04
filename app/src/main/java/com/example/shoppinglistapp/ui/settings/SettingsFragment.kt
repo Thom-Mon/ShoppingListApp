@@ -2,28 +2,30 @@ package com.example.shoppinglistapp.ui.settings
 
 import androidx.lifecycle.ViewModelProvider
 import android.os.Bundle
-import android.system.Os.open
 import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
+import android.widget.Toast
 import com.example.shoppinglistapp.AppDatabase
 import com.example.shoppinglistapp.Dao.Category.Category
 import com.example.shoppinglistapp.Dao.Item.Item
-import com.example.shoppinglistapp.R
-import com.example.shoppinglistapp.StartupClass
 import com.example.shoppinglistapp.databinding.FragmentSettingsBinding
-import com.example.shoppinglistapp.databinding.FragmentShoppinglistBinding
-import com.example.shoppinglistapp.ui.shoppinglist.ShoppinglistViewModel
+import com.example.shoppinglistapp.retrofit.ApiInterface_Category
+
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
+import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
 
-
+const val BASE_URL = "http://192.168.185.38/LocalStorager/"
 class SettingsFragment : Fragment() {
 
     private var _binding: FragmentSettingsBinding? = null
@@ -55,6 +57,10 @@ class SettingsFragment : Fragment() {
 
         binding.btnDeleteDb.setOnClickListener {
             deleteAll()
+        }
+
+        binding.btnCallApi.setOnClickListener {
+            callApi()
         }
 
 
@@ -109,6 +115,49 @@ class SettingsFragment : Fragment() {
             appDb.itemDao().deleteAll()
             appDb.categoryDao().deleteAll()
         }
+    }
+
+    fun callApi()
+    {
+        val retrofitBuilder = Retrofit.Builder()
+            .addConverterFactory(GsonConverterFactory.create())
+            .baseUrl(BASE_URL) //TODO: BaseURL An Pi-Zero anpassen!!!
+            .build()
+            .create(ApiInterface_Category::class.java)
+
+        val retrofitData = retrofitBuilder.getData_Category()
+
+        retrofitData.enqueue(object : Callback<List<Category>?> {
+            override fun onResponse(
+                call: Call<List<Category>?>,
+                response: Response<List<Category>?>
+            ) {
+                val responseBody = response.body()!!
+                for (category in responseBody)
+                {
+                    Log.e("Response", category.name!!)
+                    Toast.makeText(context, "Daten erhalten: " + category.name,Toast.LENGTH_SHORT).show()
+                }
+
+                insertResponseToDB(responseBody)
+            }
+
+            override fun onFailure(call: Call<List<Category>?>, t: Throwable) {
+                Log.e("Response", "Something went wrong is the URL of Server correct?")
+                Toast.makeText(context, t.toString(),Toast.LENGTH_SHORT).show()
+            }
+        })
+    }
+
+    private fun insertResponseToDB(responseBody: List<Category>)
+    {
+
+        GlobalScope.launch(Dispatchers.IO) {
+            // write contents from JSON-String to DB
+            appDb.categoryDao().insertAll(responseBody)
+            Log.e("LastEntry",appDb.itemDao().getSequenceNumber("item_table").toString())
+        }
+
     }
 
 }
