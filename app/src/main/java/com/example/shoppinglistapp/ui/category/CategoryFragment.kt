@@ -2,35 +2,26 @@ package com.example.shoppinglistapp.ui.category
 
 import android.app.Activity
 import android.content.Context
-import androidx.lifecycle.ViewModelProvider
 import android.os.Bundle
 import android.text.SpannableStringBuilder
 import android.util.Log
-import android.view.KeyEvent
-import androidx.fragment.app.Fragment
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import android.view.inputmethod.InputMethodManager
-import android.widget.LinearLayout
-import android.widget.TextView
 import android.widget.Toast
+import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.shoppinglistapp.AppDatabase
 import com.example.shoppinglistapp.Dao.Category.Category
-import com.example.shoppinglistapp.Dao.Item.Item
-import com.example.shoppinglistapp.R
 import com.example.shoppinglistapp.adapter.CustomAdapter
 import com.example.shoppinglistapp.adapter.ElementsViewModel
 import com.example.shoppinglistapp.databinding.FragmentCategoryBinding
-import com.example.shoppinglistapp.databinding.FragmentShoppinglistBinding
-import com.example.shoppinglistapp.ui.shoppinglist.ShoppinglistViewModel
 import com.google.gson.Gson
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import java.util.ArrayList
+
 
 class CategoryFragment : Fragment() {
 
@@ -124,9 +115,25 @@ class CategoryFragment : Fragment() {
             if (keyCode == KeyEvent.KEYCODE_ENTER && event.action == KeyEvent.ACTION_UP) {
                 if(binding.entryCategory.text!!.isNotEmpty())
                 {
-                    addCategory()
-                    binding.entryCategory.text?.clear()
-                    hideKeyboard()
+                    // check if category exists already in Arraylist
+                    val index = data.indexOfFirst{
+                        it.name == binding.entryCategory.text.toString()
+                    }
+                    if(index != -1)
+                    {
+                        Log.i("Element", "This category already exists")
+                        // Toast on the middle of the screen
+                        val toast = Toast.makeText(context,"Diese Kategorie existiert bereits!",Toast.LENGTH_SHORT)
+                        toast.setGravity(Gravity.CENTER_VERTICAL, 0, 0)
+                        toast.show()
+                    }
+                    else
+                    {
+                        addCategory()
+                        binding.entryCategory.text?.clear()
+                        hideKeyboard()
+                    }
+
                 }
 
                 return@OnKeyListener true
