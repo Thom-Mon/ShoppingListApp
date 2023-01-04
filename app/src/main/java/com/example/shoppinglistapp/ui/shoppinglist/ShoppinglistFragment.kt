@@ -89,13 +89,7 @@ class ShoppinglistFragment : Fragment() {
     }
 
     private fun addItem(item: Item, index: Int = 0) {
-        if(item.id == null){
-            Log.i("Button", "Item Id is null")
-            Log.i("Button", "LastInserted: " + getLastInsertedId())
-            Thread.sleep(550)
-            Log.i("Button", "LastInsertedFromGlobal: " + lastInsertedItem.id)
-            return
-        }
+
 
         val product_layout = getLayoutInflater().inflate(R.layout.product_linearlayout, null, false)
         val shoppinglist_layout = binding.layoutShoppingList
@@ -132,23 +126,28 @@ class ShoppinglistFragment : Fragment() {
 
         GlobalScope.launch {
             items = appDb.itemDao().getLastInsertedItem()
-            //deleteData(elementsViewModel.id.toInt())
 
             withContext(Dispatchers.Main) {
                 if (items.isNotEmpty()) {
-                    Log.e("Button", "LastInserted: " + items[0].id)
-                    lastInsertedItem = items[0]
+                    if(lastInsertedItem == items[0])
+                    {
+                        lastInsertedItem = items[0]
+                        lastInsertedItem.id!!.plus(1)
+                    }
+                    else
+                    {
+                        lastInsertedItem = items[0]
+                    }
+
                 }
             }
         }
-
     }
 
     private fun addPlusButton(category: Category)
     {
         val addProduct_layout = getLayoutInflater().inflate(R.layout.add_product_linearlayout, null, false)
         val shoppinglist_layout = binding.layoutShoppingList
-        getLastInsertedId()
 
         val productname = addProduct_layout.findViewById<EditText>(R.id.editText_Item_Name).text
 
@@ -157,12 +156,15 @@ class ShoppinglistFragment : Fragment() {
         addProduct_layout.findViewById<ImageButton>(R.id.add_Item).setOnClickListener {
             if(productname.isNotEmpty())
             {
-                val newItem = Item(lastInsertedItem.id?.plus(1), productname.toString(), category.name,0 )
-                productname.clear()
-                hideKeyboard()
+                getLastInsertedId()
+                val newItem = Item(null, productname.toString(), category.name,0 )
                 // add the item just before the plus-button position
                 addProduct(newItem)
-                addItem(newItem, shoppinglist_layout.indexOfChild(addProduct_layout))
+                hideKeyboard()
+
+                val newShowItem = Item(lastInsertedItem.id,productname.toString(), category.name,0)
+                addItem(newShowItem, shoppinglist_layout.indexOfChild(addProduct_layout))
+                productname.clear()
 
             }
         }
@@ -171,13 +173,15 @@ class ShoppinglistFragment : Fragment() {
             if (keyCode == KeyEvent.KEYCODE_ENTER && event.action == KeyEvent.ACTION_UP) {
                 if(productname.isNotEmpty())
                 {
-                    val newItem = Item(lastInsertedItem.id?.plus(1), productname.toString(), category.name,0 )
-                    productname.clear()
-                    hideKeyboard()
+                    getLastInsertedId()
+                    val newItem = Item(null, productname.toString(), category.name,0 )
                     // add the item just before the plus-button position
                     addProduct(newItem)
-                    addItem(newItem, shoppinglist_layout.indexOfChild(addProduct_layout))
+                    hideKeyboard()
 
+                    val newShowItem = Item(lastInsertedItem.id,productname.toString(), category.name,0)
+                    addItem(newShowItem, shoppinglist_layout.indexOfChild(addProduct_layout))
+                    productname.clear()
                 }
 
                 return@OnKeyListener true
@@ -188,7 +192,6 @@ class ShoppinglistFragment : Fragment() {
 
     private fun addProduct(item: Item)
     {
-        Log.e("Button", "Add Producted called")
         GlobalScope.launch {
             appDb.itemDao().insert(item)
         }

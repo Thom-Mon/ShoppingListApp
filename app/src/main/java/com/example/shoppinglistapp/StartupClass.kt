@@ -25,11 +25,13 @@ class StartupClass : Application() {
         appDb = AppDatabase.getDatabase(this)
         // this method fires once as well as constructor
         // but also application has context here
-        setupDbFromAssets()
-        setupDbCategoriesFromAssets()
+
+        // deactivated for testing / debug TODO:
+        //setupDbFromAssets()
+        //setupDbCategoriesFromAssets()
     }
 
-    fun setupDbFromAssets()
+    public fun setupDbFromAssets()
     {
         // on startup fill RoomDB with data from assets/json
         var loadedData = ArrayList<Item>()

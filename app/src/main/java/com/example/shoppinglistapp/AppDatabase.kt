@@ -26,7 +26,7 @@ abstract class AppDatabase : RoomDatabase() {
                 return tempInstance
             }
             else{
-                (context.getDatabasePath("app_database")).delete()
+               // (context.getDatabasePath("app_database")).delete()  -> Activate to delete DB on start
             }
             synchronized(this){
                 val instance = Room.databaseBuilder(
