@@ -1,19 +1,18 @@
 package com.example.shoppinglistapp.ui.settings
 
-import androidx.lifecycle.ViewModelProvider
 import android.os.Bundle
 import android.util.Log
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModelProvider
 import com.example.shoppinglistapp.AppDatabase
 import com.example.shoppinglistapp.Dao.Category.Category
 import com.example.shoppinglistapp.Dao.Item.Item
 import com.example.shoppinglistapp.databinding.FragmentSettingsBinding
 import com.example.shoppinglistapp.retrofit.ApiInterface_Category
-
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import kotlinx.coroutines.Dispatchers
@@ -61,6 +60,10 @@ class SettingsFragment : Fragment() {
 
         binding.btnCallApi.setOnClickListener {
             callApi()
+        }
+
+        binding.btnCallApiPOST.setOnClickListener {
+            callApi_Post()
         }
 
 
@@ -126,6 +129,39 @@ class SettingsFragment : Fragment() {
             .create(ApiInterface_Category::class.java)
 
         val retrofitData = retrofitBuilder.getData_Category()
+
+        retrofitData.enqueue(object : Callback<List<Category>?> {
+            override fun onResponse(
+                call: Call<List<Category>?>,
+                response: Response<List<Category>?>
+            ) {
+                val responseBody = response.body()!!
+                for (category in responseBody)
+                {
+                    Log.e("Response", category.name!!)
+                    Toast.makeText(context, "Daten erhalten: " + category.name,Toast.LENGTH_SHORT).show()
+                }
+
+                insertResponseToDB(responseBody)
+            }
+
+            override fun onFailure(call: Call<List<Category>?>, t: Throwable) {
+                Log.e("Response", "Something went wrong is the URL of Server correct?")
+                Toast.makeText(context, t.toString(),Toast.LENGTH_SHORT).show()
+            }
+        })
+    }
+
+    fun callApi_Post()
+    {
+        val retrofitBuilder = Retrofit.Builder()
+            .addConverterFactory(GsonConverterFactory.create())
+            .baseUrl(BASE_URL) //TODO: BaseURL An Pi-Zero anpassen!!!
+            .build()
+            .create(ApiInterface_Category::class.java)
+
+        val req_category = Category(1, "Post-Kategorie")
+        val retrofitData = retrofitBuilder.sendDataCategory(req_category)
 
         retrofitData.enqueue(object : Callback<List<Category>?> {
             override fun onResponse(
