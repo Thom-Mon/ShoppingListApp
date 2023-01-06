@@ -18,6 +18,7 @@ import com.google.gson.reflect.TypeToken
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -154,35 +155,70 @@ class SettingsFragment : Fragment() {
 
     fun callApi_Post()
     {
-        val retrofitBuilder = Retrofit.Builder()
-            .addConverterFactory(GsonConverterFactory.create())
-            .baseUrl(BASE_URL) //TODO: BaseURL An Pi-Zero anpassen!!!
-            .build()
-            .create(ApiInterface_Category::class.java)
+        lateinit var entries: List<Category>
+        GlobalScope.launch {
+            entries = appDb.categoryDao().getAll()
 
-        val req_category = Category(1, "Post-Kategorie")
-        val retrofitData = retrofitBuilder.sendDataCategory(req_category)
+            if(entries.isNotEmpty()) {
+                withContext(Dispatchers.Main) {
+                    val retrofitBuilder = Retrofit.Builder()
+                        .addConverterFactory(GsonConverterFactory.create())
+                        .baseUrl(BASE_URL) //TODO: BaseURL An Pi-Zero anpassen!!!
+                        .build()
+                        .create(ApiInterface_Category::class.java)
 
-        retrofitData.enqueue(object : Callback<List<Category>?> {
-            override fun onResponse(
-                call: Call<List<Category>?>,
-                response: Response<List<Category>?>
-            ) {
-                val responseBody = response.body()!!
-                for (category in responseBody)
-                {
-                    Log.e("Response", category.name!!)
-                    Toast.makeText(context, "Daten erhalten: " + category.name,Toast.LENGTH_SHORT).show()
+                    //val req_category = Category(1, "Post-Kategorie")
+                    val retrofitData = retrofitBuilder.sendDataCategory(entries)
+
+                    retrofitData.enqueue(object : Callback<List<Category>?> {
+                        override fun onResponse(
+                            call: Call<List<Category>?>,
+                            response: Response<List<Category>?>
+                        ) {
+                            val responseBody = response.body()!!
+                            for (category in responseBody)
+                            {
+                                Log.e("Response", category.name!!)
+                                Toast.makeText(context, "Daten erhalten: " + category.name,Toast.LENGTH_SHORT).show()
+                            }
+
+                            //insertResponseToDB(responseBody)
+                        }
+
+                        override fun onFailure(call: Call<List<Category>?>, t: Throwable) {
+                            Log.e("Response", "Something went wrong is the URL of Server correct?")
+                            Toast.makeText(context, t.toString(),Toast.LENGTH_SHORT).show()
+                        }
+                    })
+
+
+
+
+
+
                 }
 
-                insertResponseToDB(responseBody)
             }
+        }
 
-            override fun onFailure(call: Call<List<Category>?>, t: Throwable) {
-                Log.e("Response", "Something went wrong is the URL of Server correct?")
-                Toast.makeText(context, t.toString(),Toast.LENGTH_SHORT).show()
+
+    }
+
+    private fun getCategoriesFromDb()  {
+
+        lateinit var entries: List<Category>
+
+        // Create here the setWhenClickListener für den Adapter
+        GlobalScope.launch {
+                entries = appDb.categoryDao().getAll()
+
+                if(entries.isNotEmpty()) {
+                    withContext(Dispatchers.Main) {
+                        //return entries
+                    }
+
+                }
             }
-        })
     }
 
     private fun insertResponseToDB(responseBody: List<Category>)
@@ -193,7 +229,6 @@ class SettingsFragment : Fragment() {
             appDb.categoryDao().insertAll(responseBody)
             Log.e("LastEntry",appDb.itemDao().getSequenceNumber("item_table").toString())
         }
-
     }
 
 }

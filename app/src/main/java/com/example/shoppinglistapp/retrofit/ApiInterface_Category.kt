@@ -15,7 +15,7 @@ interface ApiInterface_Category {
 
     @POST("index.php?c=pages&a=response")
     fun sendDataCategory(
-        @Body body: Category?
+        @Body body: List<Category?>
     ): Call<List<com.example.shoppinglistapp.Dao.Category.Category>>
 
 
