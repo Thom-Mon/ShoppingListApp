@@ -13,6 +13,7 @@ import com.example.shoppinglistapp.Dao.Category.Category
 import com.example.shoppinglistapp.Dao.Item.Item
 import com.example.shoppinglistapp.databinding.FragmentSettingsBinding
 import com.example.shoppinglistapp.retrofit.ApiInterface_Category
+import com.example.shoppinglistapp.retrofit.ApiInterface_Item
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import kotlinx.coroutines.Dispatchers
@@ -61,10 +62,12 @@ class SettingsFragment : Fragment() {
 
         binding.btnCallApi.setOnClickListener {
             callApi()
+            callApiGetItems()
         }
 
         binding.btnCallApiPOST.setOnClickListener {
             callApi_Post()
+            callApi_Post_Items()
         }
 
 
@@ -179,8 +182,8 @@ class SettingsFragment : Fragment() {
                             for (category in responseBody)
                             {
                                 Log.e("Response", category.name!!)
-                                Toast.makeText(context, "Daten erhalten: " + category.name,Toast.LENGTH_SHORT).show()
                             }
+                            Toast.makeText(context, "Daten erhalten erster Eintrag: " + responseBody[0].name,Toast.LENGTH_SHORT).show()
 
                             //insertResponseToDB(responseBody)
                         }
@@ -190,35 +193,91 @@ class SettingsFragment : Fragment() {
                             Toast.makeText(context, t.toString(),Toast.LENGTH_SHORT).show()
                         }
                     })
+                }
+            }
+        }
+    }
+    fun callApiGetItems()
+    {
+        val retrofitBuilder = Retrofit.Builder()
+            .addConverterFactory(GsonConverterFactory.create())
+            .baseUrl(BASE_URL) //TODO: BaseURL An Pi-Zero anpassen!!!
+            .build()
+            .create(ApiInterface_Item::class.java)
 
+        val retrofitData = retrofitBuilder.getDataItem()
 
+        retrofitData.enqueue(object : Callback<List<Item>?> {
+            override fun onResponse(
+                call: Call<List<Item>?>,
+                response: Response<List<Item>?>
+            ) {
+                val responseBody = response.body()!!
+                for (category in responseBody)
+                {
+                    Log.e("Response", category.name!!)
+                    Toast.makeText(context, "Daten erhalten: " + category.name,Toast.LENGTH_SHORT).show()
+                }
 
+                insertResponseToDbItem(responseBody)
+            }
 
+            override fun onFailure(call: Call<List<Item>?>, t: Throwable) {
+                Log.e("Response", "Something went wrong is the URL of Server correct?")
+                Toast.makeText(context, t.toString(),Toast.LENGTH_SHORT).show()
+            }
+        })
+    }
 
+    private fun insertResponseToDbItem(responseBody: List<Item>)
+    {
+        GlobalScope.launch(Dispatchers.IO) {
+            // write contents from JSON-String to DB
+            appDb.itemDao().insertAll(responseBody)
+        }
+    }
 
+    fun callApi_Post_Items()
+    {
+        lateinit var entries: List<Item>
+        GlobalScope.launch {
+            entries = appDb.itemDao().getAll()
+
+            if(entries.isNotEmpty()) {
+                withContext(Dispatchers.Main) {
+                    val retrofitBuilder = Retrofit.Builder()
+                        .addConverterFactory(GsonConverterFactory.create())
+                        .baseUrl(BASE_URL) //TODO: BaseURL An Pi-Zero anpassen!!!
+                        .build()
+                        .create(ApiInterface_Item::class.java)
+
+                    //val req_category = Category(1, "Post-Kategorie")
+                    val retrofitData = retrofitBuilder.sendDataItem(entries)
+
+                    retrofitData.enqueue(object : Callback<List<Item>?>{
+                        override fun onResponse(
+                            call: Call<List<Item>?>,
+                            response: Response<List<Item>?>
+                        ) {
+                            val responseBody = response.body()!!
+                            for (item in responseBody)
+                            {
+                                Log.e("Response", item.name!!)
+                                Toast.makeText(context, "Daten erhalten: " + item.name,Toast.LENGTH_SHORT).show()
+                            }
+
+                            //insertResponseToDB(responseBody)
+                        }
+
+                        override fun onFailure(call: Call<List<Item>?>, t: Throwable) {
+                            Log.e("Response", "Something went wrong is the URL of Server correct?")
+                            Toast.makeText(context, t.toString(),Toast.LENGTH_SHORT).show()
+                        }
+                    })
                 }
 
             }
         }
-
-
-    }
-
-    private fun getCategoriesFromDb()  {
-
-        lateinit var entries: List<Category>
-
-        // Create here the setWhenClickListener für den Adapter
-        GlobalScope.launch {
-                entries = appDb.categoryDao().getAll()
-
-                if(entries.isNotEmpty()) {
-                    withContext(Dispatchers.Main) {
-                        //return entries
-                    }
-
-                }
-            }
     }
 
     private fun insertResponseToDB(responseBody: List<Category>)
@@ -227,7 +286,6 @@ class SettingsFragment : Fragment() {
         GlobalScope.launch(Dispatchers.IO) {
             // write contents from JSON-String to DB
             appDb.categoryDao().insertAll(responseBody)
-            Log.e("LastEntry",appDb.itemDao().getSequenceNumber("item_table").toString())
         }
     }
 
