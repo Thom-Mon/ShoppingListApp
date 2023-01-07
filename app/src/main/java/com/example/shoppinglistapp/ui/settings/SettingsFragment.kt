@@ -172,7 +172,7 @@ class SettingsFragment : Fragment() {
                         .create(ApiInterface_Category::class.java)
 
                     // sets the id to null, to make on get request possible to set all ids freely (val in category.kt was changed to var)
-                    entries.onEach { it.id = null }
+                    //entries.onEach { it.id = null }
                     //val req_category = Category(1, "Post-Kategorie")
                     val retrofitData = retrofitBuilder.sendDataCategory(entries)
 
@@ -181,12 +181,15 @@ class SettingsFragment : Fragment() {
                             call: Call<List<Category>?>,
                             response: Response<List<Category>?>
                         ) {
-                            val responseBody = response.body()!!
-                            for (category in responseBody)
-                            {
-                                Log.e("Response", category.name!!)
+                            if(response.body() != null){
+                                val responseBody = response.body()!!
+                                for (category in responseBody)
+                                {
+                                    Log.e("Response", category.name!!)
+                                }
+                                Toast.makeText(context, "Daten erhalten erster Eintrag: " + responseBody[0].name,Toast.LENGTH_SHORT).show()
+
                             }
-                            Toast.makeText(context, "Daten erhalten erster Eintrag: " + responseBody[0].name,Toast.LENGTH_SHORT).show()
 
                             //insertResponseToDB(responseBody)
                         }
@@ -254,7 +257,7 @@ class SettingsFragment : Fragment() {
                         .build()
                         .create(ApiInterface_Item::class.java)
 
-                    entries.onEach { it.id = null }
+                    //entries.onEach { it.id = null }
                     //val req_category = Category(1, "Post-Kategorie")
                     val retrofitData = retrofitBuilder.sendDataItem(entries)
 
@@ -263,12 +266,16 @@ class SettingsFragment : Fragment() {
                             call: Call<List<Item>?>,
                             response: Response<List<Item>?>
                         ) {
-                            val responseBody = response.body()!!
-                            for (item in responseBody)
+                            if(response.body() != null)
                             {
-                                Log.e("Response", item.name!!)
-                                Toast.makeText(context, "Daten erhalten: " + item.name,Toast.LENGTH_SHORT).show()
+                                val responseBody = response.body()!!
+                                for (item in responseBody)
+                                {
+                                    Log.e("Response", item.name!!)
+                                    Toast.makeText(context, "Daten erhalten: " + item.name,Toast.LENGTH_SHORT).show()
+                                }
                             }
+
 
                             //insertResponseToDB(responseBody)
                         }
