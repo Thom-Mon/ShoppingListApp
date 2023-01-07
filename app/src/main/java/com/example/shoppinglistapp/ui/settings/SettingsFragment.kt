@@ -247,7 +247,7 @@ class SettingsFragment : Fragment() {
     {
         lateinit var entries: List<Item>
         GlobalScope.launch {
-            entries = appDb.itemDao().findByStatus(0)
+            entries = appDb.itemDao().getAll()
 
             if(entries.isNotEmpty()) {
                 withContext(Dispatchers.Main) {
