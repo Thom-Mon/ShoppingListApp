@@ -156,6 +156,7 @@ class SettingsFragment : Fragment() {
         })
     }
 
+    // POST only the products with status 0
     fun callApi_Post()
     {
         lateinit var entries: List<Category>
@@ -243,7 +244,7 @@ class SettingsFragment : Fragment() {
     {
         lateinit var entries: List<Item>
         GlobalScope.launch {
-            entries = appDb.itemDao().getAll()
+            entries = appDb.itemDao().findByStatus(0)
 
             if(entries.isNotEmpty()) {
                 withContext(Dispatchers.Main) {
