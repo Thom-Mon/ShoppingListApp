@@ -170,6 +170,8 @@ class SettingsFragment : Fragment() {
                         .build()
                         .create(ApiInterface_Category::class.java)
 
+                    // sets the id to null, to make on get request possible to set all ids freely (val in category.kt was changed to var)
+                    entries.onEach { it.id = null }
                     //val req_category = Category(1, "Post-Kategorie")
                     val retrofitData = retrofitBuilder.sendDataCategory(entries)
 
@@ -251,6 +253,7 @@ class SettingsFragment : Fragment() {
                         .build()
                         .create(ApiInterface_Item::class.java)
 
+                    entries.onEach { it.id = null }
                     //val req_category = Category(1, "Post-Kategorie")
                     val retrofitData = retrofitBuilder.sendDataItem(entries)
 
