@@ -15,4 +15,9 @@ interface ApiInterface_Item {
     fun sendDataItem(
         @Body body: List<Item?>
     ): Call<List<com.example.shoppinglistapp.Dao.Item.Item>>
+
+    @POST("index.php?c=pages&a=getitems&download")
+    fun sendDataItemDownload(
+        @Body body: List<Item?>
+    ): Call<List<com.example.shoppinglistapp.Dao.Item.Item>>
 }

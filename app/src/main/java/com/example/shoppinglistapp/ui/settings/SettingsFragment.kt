@@ -70,6 +70,11 @@ class SettingsFragment : Fragment() {
             callApi_Post_Items()
         }
 
+        binding.btnCallApiPOSTDownload.setOnClickListener {
+            callApi_Post()
+            callApi_Post_Items(true)
+        }
+
 
 
 
@@ -243,7 +248,7 @@ class SettingsFragment : Fragment() {
         }
     }
 
-    fun callApi_Post_Items()
+    fun callApi_Post_Items(download: Boolean = false)
     {
         lateinit var entries: List<Item>
         GlobalScope.launch {
@@ -257,9 +262,13 @@ class SettingsFragment : Fragment() {
                         .build()
                         .create(ApiInterface_Item::class.java)
 
-                    //entries.onEach { it.id = null }
-                    //val req_category = Category(1, "Post-Kategorie")
-                    val retrofitData = retrofitBuilder.sendDataItem(entries)
+
+                    // if download then use other call to server to get Data
+                    var retrofitData = retrofitBuilder.sendDataItem(entries)
+                    if(download)
+                    {
+                        retrofitData = retrofitBuilder.sendDataItemDownload(entries)
+                    }
 
                     retrofitData.enqueue(object : Callback<List<Item>?>{
                         override fun onResponse(

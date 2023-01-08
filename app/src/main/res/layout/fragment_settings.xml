@@ -40,10 +40,21 @@
         android:id="@+id/btn_call_api_POST"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="35dp"
-        android:text="Localstorager POST REQUEST"
+        android:layout_marginTop="100dp"
+        android:text="Update to Server"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/btn_call_api" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btn_call_api_POST_download"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="40dp"
+        android:text="Update from Server"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/btn_call_api_POST" />
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>
