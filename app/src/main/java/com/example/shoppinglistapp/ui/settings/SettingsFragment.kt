@@ -363,7 +363,7 @@ class SettingsFragment : Fragment() {
         //FIXME:
         // 1. Save categories to on saveToExternalStorage in different file
         // 2. Or what is more flexible -> use category in items to build category from
-        //    items itself
+        //    items itself 01.02.2023
         var loadedData = java.util.ArrayList<Item>()
         var filename = "test.txt";
         var currentIndex = 0
