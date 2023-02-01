@@ -25,6 +25,7 @@ import retrofit2.Callback
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import java.io.File
 
 const val BASE_URL = "http://192.168.185.38/LocalStorager/"
 class SettingsFragment : Fragment() {
@@ -73,6 +74,14 @@ class SettingsFragment : Fragment() {
         binding.btnCallApiPOSTDownload.setOnClickListener {
             callApi_Post()
             callApi_Post_Items(true)
+        }
+
+        binding.btnSaveToFile.setOnClickListener {
+            saveToExternalStorage()
+        }
+
+        binding.btnLoadFromFile.setOnClickListener {
+            loadFromExternalStorage()
         }
 
 
@@ -308,5 +317,88 @@ class SettingsFragment : Fragment() {
             appDb.categoryDao().insertAll(responseBody)
         }
     }
+    private fun saveToExternalStorage()
+    {
+        //-> saving to JSON for easy get it back
+        val fileName = "test.txt"
+        File(requireContext().filesDir, fileName).delete()
+        // SAVING WELL
+        //    val fileOutputStream: FileOutputStream = openFileOutput("mytextfile.txt", Context.MODE_PRIVATE)
+        //    val outputWriter = OutputStreamWriter(fileOutputStream)
+        //    outputWriter.write("test with mytextfile")
+        //    outputWriter.close()
+        // ALSO WORKING WELL
+        lateinit var entries: List<Item>
 
+        GlobalScope.launch(Dispatchers.IO){
+            entries = appDb.itemDao().getAll()
+            if(entries.isNotEmpty())
+            {
+                if(entries != null)
+                {
+                    if(File(requireContext().filesDir, fileName).exists())
+                    {
+                        File(requireContext().filesDir, fileName).delete()
+                    }
+
+                    withContext(Dispatchers.Main)
+                    {
+                        Log.e("ALL_ENTRIES",entries.toString())
+                        File(requireContext().filesDir, fileName).printWriter().use { out ->
+                            out.println(gson.toJson(entries))}
+                    }
+
+
+                }
+            }
+
+
+        }
+
+        Toast.makeText(requireContext(), "Datei gespeichert: $fileName",Toast.LENGTH_SHORT).show()
+    }
+
+    private fun loadFromExternalStorage()
+    {
+        //FIXME:
+        // 1. Save categories to on saveToExternalStorage in different file
+        // 2. Or what is more flexible -> use category in items to build category from
+        //    items itself
+        var loadedData = java.util.ArrayList<Item>()
+        var filename = "test.txt";
+        var currentIndex = 0
+        var firstEntryDatetime = ""
+
+        try {
+            val file = File(requireContext().filesDir,filename)
+            val fileContents = file.readText()
+            //Log.e("Load",fileContents.toString())
+            val arrayListTutorialType = object : TypeToken<List<Item>>() {}.type
+            loadedData = gson.fromJson(fileContents, arrayListTutorialType)
+            Log.e("Load",loadedData.toString())
+            //data.clear()
+
+            // TODO
+            // 1. Sicherheitsabfrage bauen, weil ja die currentDB gelöscht wird
+
+            //TODO:
+            // 1. Get the first entry.date
+            // 2. Get the currentEntry.date
+            // 3. Write the hours between them on the recyclerview
+
+            GlobalScope.launch(Dispatchers.IO){
+                //appDb.entryDao().insert(entry)
+                appDb.itemDao().insertAll(loadedData)
+            }
+
+
+            //toastMessage("Datei geladen: $filename")
+            Toast.makeText(requireContext(), "Datei geladen: ${filename}",Toast.LENGTH_SHORT).show()
+        }
+        catch (e: Exception){
+            //toastMessage("Dateilesefehler: " + e.message)
+            Toast.makeText(requireContext(), "Datei gespeichert: ${e.message}",Toast.LENGTH_SHORT).show()
+        }
+        //readAllData()
+    }
 }
