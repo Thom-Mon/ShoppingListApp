@@ -1,14 +1,14 @@
 package com.example.shoppinglistapp.ui.listmanagement
 
-import androidx.lifecycle.ViewModelProvider
 import android.os.Bundle
 import android.text.SpannableStringBuilder
 import android.util.Log
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.shoppinglistapp.AppDatabase
 import com.example.shoppinglistapp.Dao.Category.Category
@@ -68,6 +68,16 @@ class ListmanagementFragment : Fragment() {
 
     private fun refreshRecyclerView()
     {
+        val size = data.size
+        data.clear()
+        adapter.notifyItemRangeRemoved(0, size)
+
+        // watch out the filesystem read to fast, so it cannot show the newly
+        // created file on the recycler view yet!!! TODO:
+        // Further TODO:
+        // 1. On Click on Item of recycler view delete it on filesystem to
+        // 2. On Click get it to load
+        // 3. On Click get name to textinput to make it possible to save
         // get list of files stored on phone
         var files: Array<String> = requireContext().fileList()
         var index = 0
