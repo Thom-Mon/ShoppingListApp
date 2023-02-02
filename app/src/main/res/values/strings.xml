@@ -19,4 +19,6 @@
     <string name="fragment_headline_shoppinglist">Einkaufsliste</string>
     <string name="app_version">v1.0</string>
     <string name="fragment_headline_standard">Standards wiederherstellen</string>
+    <string name="fragment_headline_listmanagement">Listenverwaltung</string>
+    <string name="menu_listmanagement">Listenverwaltung</string>
 </resources>
