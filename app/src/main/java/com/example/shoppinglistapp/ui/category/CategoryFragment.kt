@@ -59,6 +59,7 @@ class CategoryFragment : Fragment() {
 
         recyclerView.adapter = adapter
 
+        // recyclerview button listener Implementation
         adapter.setWhenClickListener(object : CustomAdapter.OnItemsClickListener {
             override fun onItemClick(elementsViewModel: ElementsViewModel, buttonId: Int) {
                 // the button id refers to either delete or edit from the recyclerview

@@ -2,19 +2,20 @@ package com.example.shoppinglistapp.ui.listmanagement
 
 import androidx.lifecycle.ViewModelProvider
 import android.os.Bundle
+import android.text.SpannableStringBuilder
 import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.shoppinglistapp.AppDatabase
 import com.example.shoppinglistapp.Dao.Category.Category
 import com.example.shoppinglistapp.Dao.Item.Item
-import com.example.shoppinglistapp.R
+import com.example.shoppinglistapp.adapter.CustomAdapter
+import com.example.shoppinglistapp.adapter.ElementsViewModel
 import com.example.shoppinglistapp.databinding.FragmentListmanagementBinding
-import com.example.shoppinglistapp.databinding.FragmentSettingsBinding
-import com.example.shoppinglistapp.ui.settings.SettingsViewModel
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import kotlinx.coroutines.Dispatchers
@@ -26,6 +27,8 @@ import java.io.File
 class ListmanagementFragment : Fragment() {
     private var _binding: FragmentListmanagementBinding? = null
     private  lateinit var appDb : AppDatabase
+    private var data = ArrayList<ElementsViewModel>()
+    private val adapter = CustomAdapter(data)
     private val gson = Gson()
     // This property is only valid between onCreateView and
     // onDestroyView.
@@ -44,6 +47,11 @@ class ListmanagementFragment : Fragment() {
         val root: View = binding.root
 
         appDb = AppDatabase.getDatabase(requireContext())
+        val recyclerView = binding.recyclerviewFiles
+        recyclerView.layoutManager = LinearLayoutManager(context)
+
+        recyclerView.adapter = adapter
+
 
         binding.btnSaveToFile.setOnClickListener {
             saveToExternalStorage()
@@ -53,8 +61,25 @@ class ListmanagementFragment : Fragment() {
             loadFromExternalStorage()
         }
 
+        refreshRecyclerView()
 
         return root
+    }
+
+    private fun refreshRecyclerView()
+    {
+        // get list of files stored on phone
+        var files: Array<String> = requireContext().fileList()
+        var index = 0
+        for(file in files)
+        {
+            data.add(
+                ElementsViewModel(index, SpannableStringBuilder(file).toString())
+            )
+            adapter.notifyItemInserted(data.size-1)
+            binding.recyclerviewFiles.scheduleLayoutAnimation()
+            index++
+        }
     }
 
     private fun insertResponseToDB(responseBody: List<Category>)
@@ -75,12 +100,7 @@ class ListmanagementFragment : Fragment() {
         }
 
         File(requireContext().filesDir, fileName).delete()
-        // SAVING WELL
-        //    val fileOutputStream: FileOutputStream = openFileOutput("mytextfile.txt", Context.MODE_PRIVATE)
-        //    val outputWriter = OutputStreamWriter(fileOutputStream)
-        //    outputWriter.write("test with mytextfile")
-        //    outputWriter.close()
-        // ALSO WORKING WELL
+
         lateinit var entries: List<Item>
 
         GlobalScope.launch(Dispatchers.IO){
@@ -104,22 +124,16 @@ class ListmanagementFragment : Fragment() {
             }
         }
         Toast.makeText(requireContext(), "Datei gespeichert: $fileName", Toast.LENGTH_SHORT).show()
+
+        // add new file to recyclerview
+        refreshRecyclerView()
     }
 
     private fun loadFromExternalStorage()
     {
-        //FIXME:
-        // 1. Save categories to on saveToExternalStorage in different file
-        // 2. Or what is more flexible -> use category in items to build category from
-        //    items itself 01.02.2023
         var loadedData = java.util.ArrayList<Item>()
 
-        // get list of files stored on phone
-        var files: Array<String> = requireContext().fileList()
-        for(file in files)
-        {
-            Log.e("Files", file)
-        }
+
 
         var filename = "Default"
         if(binding.entryFilename.text!!.isNotEmpty())
@@ -158,7 +172,6 @@ class ListmanagementFragment : Fragment() {
 
     private fun extractCategoriesFromItems(loadedData: java.util.ArrayList<Item>)
     {
-
         var categories = mutableListOf<String>()
         var categoriesAlreadyInDb = mutableListOf<String>()
 
