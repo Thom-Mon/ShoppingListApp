@@ -365,6 +365,7 @@ class SettingsFragment : Fragment() {
         // 2. Or what is more flexible -> use category in items to build category from
         //    items itself 01.02.2023
         var loadedData = java.util.ArrayList<Item>()
+
         var filename = "test.txt";
         var currentIndex = 0
         var firstEntryDatetime = ""
@@ -376,15 +377,10 @@ class SettingsFragment : Fragment() {
             val arrayListTutorialType = object : TypeToken<List<Item>>() {}.type
             loadedData = gson.fromJson(fileContents, arrayListTutorialType)
             Log.e("Load",loadedData.toString())
-            //data.clear()
 
-            // TODO
-            // 1. Sicherheitsabfrage bauen, weil ja die currentDB gelöscht wird
-
-            //TODO:
-            // 1. Get the first entry.date
-            // 2. Get the currentEntry.date
-            // 3. Write the hours between them on the recyclerview
+            // create Category-Entry from Entries in Items
+            extractCategoriesFromItems(loadedData)
+            //
 
             GlobalScope.launch(Dispatchers.IO){
                 //appDb.entryDao().insert(entry)
@@ -400,5 +396,42 @@ class SettingsFragment : Fragment() {
             Toast.makeText(requireContext(), "Datei gespeichert: ${e.message}",Toast.LENGTH_SHORT).show()
         }
         //readAllData()
+    }
+
+    private fun extractCategoriesFromItems(loadedData: java.util.ArrayList<Item>)
+    {
+
+        var categories = mutableListOf<String>()
+        var categoriesAlreadyInDb = mutableListOf<String>()
+
+        var categoriesExtract = java.util.ArrayList<Category>()
+
+        lateinit var entries: List<Category>
+        val job = GlobalScope.launch {
+            entries = appDb.categoryDao().getAll()
+
+            if (entries.isNotEmpty()) {
+                for(entry in entries)
+                {
+                    categoriesAlreadyInDb.add(entry.name.toString())
+                }
+            }
+            withContext(Dispatchers.IO)
+            {
+                for (item in loadedData)
+                {
+                    if(!categories.contains(item.category.toString()) && !categoriesAlreadyInDb.contains(item.category.toString()))
+                    {
+                        categories.add(item.category.toString())
+                    }
+                }
+
+                for (category in categories)
+                {
+                    categoriesExtract.add(Category(null, category))
+                }
+            }
+        }
+        insertResponseToDB(categoriesExtract)
     }
 }
