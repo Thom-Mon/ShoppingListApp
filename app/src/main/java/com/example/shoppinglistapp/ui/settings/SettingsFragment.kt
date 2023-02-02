@@ -1,10 +1,11 @@
 package com.example.shoppinglistapp.ui.settings
 
+import android.app.Activity
+import android.content.Context
 import android.os.Bundle
 import android.util.Log
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
+import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
@@ -84,6 +85,20 @@ class SettingsFragment : Fragment() {
             loadFromExternalStorage()
         }
 
+        binding.entryFilename.setOnKeyListener(View.OnKeyListener { v, keyCode, event ->
+            if (keyCode == KeyEvent.KEYCODE_ENTER && event.action == KeyEvent.ACTION_UP) {
+                if(binding.entryFilename.text!!.isNotEmpty())
+                {
+                    //addCategory() //->saveToFile
+                    binding.entryFilename.text?.clear()
+                    hideKeyboard()
+                }
+
+                return@OnKeyListener true
+            }
+            false
+        })
+
 
 
 
@@ -95,6 +110,19 @@ class SettingsFragment : Fragment() {
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+    }
+
+    fun Fragment.hideKeyboard() {
+        view?.let { activity?.hideKeyboard(it) }
+    }
+
+    fun Activity.hideKeyboard() {
+        hideKeyboard(currentFocus ?: View(this))
+    }
+
+    fun Context.hideKeyboard(view: View) {
+        val inputMethodManager = getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
+        inputMethodManager.hideSoftInputFromWindow(view.windowToken, 0)
     }
 
 
@@ -319,8 +347,13 @@ class SettingsFragment : Fragment() {
     }
     private fun saveToExternalStorage()
     {
+        var fileName = "Default"
         //-> saving to JSON for easy get it back
-        val fileName = "test.txt"
+        if(binding.entryFilename.text!!.isNotEmpty())
+        {
+            fileName = binding.entryFilename.text.toString()
+        }
+
         File(requireContext().filesDir, fileName).delete()
         // SAVING WELL
         //    val fileOutputStream: FileOutputStream = openFileOutput("mytextfile.txt", Context.MODE_PRIVATE)
@@ -366,7 +399,12 @@ class SettingsFragment : Fragment() {
         //    items itself 01.02.2023
         var loadedData = java.util.ArrayList<Item>()
 
-        var filename = "test.txt";
+        var filename = "Default"
+        if(binding.entryFilename.text!!.isNotEmpty())
+        {
+            filename = binding.entryFilename.text.toString()
+        }
+
         var currentIndex = 0
         var firstEntryDatetime = ""
 
@@ -388,12 +426,10 @@ class SettingsFragment : Fragment() {
             }
 
 
-            //toastMessage("Datei geladen: $filename")
             Toast.makeText(requireContext(), "Datei geladen: ${filename}",Toast.LENGTH_SHORT).show()
         }
         catch (e: Exception){
-            //toastMessage("Dateilesefehler: " + e.message)
-            Toast.makeText(requireContext(), "Datei gespeichert: ${e.message}",Toast.LENGTH_SHORT).show()
+            Toast.makeText(requireContext(), "Fehler beim Laden: ${e.message}",Toast.LENGTH_SHORT).show()
         }
         //readAllData()
     }
