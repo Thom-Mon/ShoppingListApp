@@ -399,6 +399,13 @@ class SettingsFragment : Fragment() {
         //    items itself 01.02.2023
         var loadedData = java.util.ArrayList<Item>()
 
+        // get list of files stored on phone
+        var files: Array<String> = requireContext().fileList()
+        for(file in files)
+        {
+            Log.e("Files", file)
+        }
+
         var filename = "Default"
         if(binding.entryFilename.text!!.isNotEmpty())
         {
