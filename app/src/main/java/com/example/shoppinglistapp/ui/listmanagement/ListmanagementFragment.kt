@@ -221,7 +221,7 @@ class ListmanagementFragment : Fragment() {
     private fun saveFile(filename : String, fileContent: String) {
         // this is from another example it is working good better than any other example using the MediaStore, MediaStore might be overkill
         // save to .txt-File for debugging later redo with own filetype to open app directly with that type
-            val f = File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS), filename+".txt")
+            val f = File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS), filename+".hai")
             f.delete()
             f.appendText(fileContent)
     }

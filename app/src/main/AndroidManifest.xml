@@ -23,8 +23,21 @@
             android:theme="@style/Theme.ShoppingListApp.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="file" />
+                <data android:scheme="content" />
+                <data android:mimeType="application/*" />
+                <data android:host="*" />
+                <!-- This is used because android is otherwise too stupid to find the dot-->
+                <data android:pathPattern=".*\\.hai" />
+                <data android:pathPattern=".*\\..*\\.hai" />
+                <data android:pathPattern=".*\\..*\\..*\\.hai" />
+                <data android:pathPattern=".*\\..*\\..*\\..*\\.hai" />
             </intent-filter>
 
             <meta-data
