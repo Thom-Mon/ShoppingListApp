@@ -134,12 +134,13 @@ class ListmanagementFragment : Fragment() {
                         Log.e("ALL_ENTRIES",entries.toString())
                         File(requireContext().filesDir, fileName).printWriter().use { out ->
                             out.println(gson.toJson(entries))}
+                        saveFile(fileName,gson.toJson(entries))
                     }
                 }
             }
         }
         Toast.makeText(requireContext(), "Datei gespeichert: $fileName", Toast.LENGTH_SHORT).show()
-        saveFile(fileName,gson.toJson(entries))
+
 
         // add new file to recyclerview
         refreshRecyclerView()
