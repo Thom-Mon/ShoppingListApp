@@ -1,6 +1,10 @@
 package com.example.shoppinglistapp.ui.listmanagement
 
+import android.content.ContentValues
+import android.net.Uri
 import android.os.Bundle
+import android.os.Environment
+import android.provider.MediaStore
 import android.text.SpannableStringBuilder
 import android.util.Log
 import android.view.LayoutInflater
@@ -23,6 +27,7 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.File
+import java.time.Instant
 
 class ListmanagementFragment : Fragment() {
     private var _binding: FragmentListmanagementBinding? = null
@@ -134,6 +139,7 @@ class ListmanagementFragment : Fragment() {
             }
         }
         Toast.makeText(requireContext(), "Datei gespeichert: $fileName", Toast.LENGTH_SHORT).show()
+        saveFile(fileName,gson.toJson(entries))
 
         // add new file to recyclerview
         refreshRecyclerView()
@@ -142,8 +148,6 @@ class ListmanagementFragment : Fragment() {
     private fun loadFromExternalStorage()
     {
         var loadedData = java.util.ArrayList<Item>()
-
-
 
         var filename = "Default"
         if(binding.entryFilename.text!!.isNotEmpty())
@@ -170,14 +174,11 @@ class ListmanagementFragment : Fragment() {
                 //appDb.entryDao().insert(entry)
                 appDb.itemDao().insertAll(loadedData)
             }
-
-
             Toast.makeText(requireContext(), "Datei geladen: ${filename}", Toast.LENGTH_SHORT).show()
         }
         catch (e: Exception){
             Toast.makeText(requireContext(), "Fehler beim Laden: ${e.message}", Toast.LENGTH_SHORT).show()
         }
-        //readAllData()
     }
 
     private fun extractCategoriesFromItems(loadedData: java.util.ArrayList<Item>)
@@ -214,5 +215,14 @@ class ListmanagementFragment : Fragment() {
             }
         }
         insertResponseToDB(categoriesExtract)
+    }
+
+
+    private fun saveFile(filename : String, fileContent: String) {
+        // this is from another example it is working good better than any other example using the MediaStore, MediaStore might be overkill
+        // save to .txt-File for debugging later redo with own filetype to open app directly with that type
+            val f = File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS), filename+".txt")
+            f.delete()
+            f.appendText(fileContent)
     }
 }
