@@ -105,16 +105,13 @@ class MainActivity : AppCompatActivity() {
     {
         var loadedData = java.util.ArrayList<Item>()
 
-        var uri = intent.data
+        val uri = intent.data
 
-        var inputStream = this.contentResolver.openInputStream(uri!!)
-        var byteArray = inputStream!!.readBytes()
+        val inputStream = this.contentResolver.openInputStream(uri!!)
+        val byteArray = inputStream!!.readBytes()
 
         //final data from file that opened the app
         val intentFileContent: String = String(byteArray)
-        Log.e("intention-content of file",intentFileContent)
-
-
 
         var currentIndex = 0
         var firstEntryDatetime = ""
