@@ -7,8 +7,6 @@ import android.util.Log
 import android.view.Menu
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.content.ContentProviderCompat.requireContext
-import androidx.core.net.toFile
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
@@ -26,7 +24,6 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.File
-import java.io.InputStream
 
 
 class MainActivity : AppCompatActivity() {
@@ -53,7 +50,23 @@ class MainActivity : AppCompatActivity() {
         if(intent.data.toString() != "null")
         {
             Log.e("intention",intent.data.toString())
-            loadFromIntent(intent)
+            Log.e("Intention-type (in if)", intent.type.toString())
+            Log.e("Intention-action", intent.action.toString())
+
+
+        }
+
+        when {
+            intent?.action == Intent.ACTION_VIEW -> {
+                if ("application/octet-stream" == intent.type) {
+                    //handleSendText(intent) // Handle text being sent
+                    Log.e("Intention-type (in when)", intent.type.toString())
+                    Log.e("intention-content", intent.data.toString())
+
+                    loadFromIntent(intent)
+                }
+
+            }
         }
 
 
@@ -92,19 +105,23 @@ class MainActivity : AppCompatActivity() {
     {
         var loadedData = java.util.ArrayList<Item>()
 
-        //var filename = intent.data.toFile()
+        var uri = intent.data
+
+        var inputStream = this.contentResolver.openInputStream(uri!!)
+        var byteArray = inputStream!!.readBytes()
+
+        //final data from file that opened the app
+        val intentFileContent: String = String(byteArray)
+        Log.e("intention-content of file",intentFileContent)
+
 
 
         var currentIndex = 0
         var firstEntryDatetime = ""
 
         try {
-            val file = File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS), "Banane.hai")
-
-            val fileContents = file.readText()
-            //Log.e("Load",fileContents.toString())
             val arrayListTutorialType = object : TypeToken<List<Item>>() {}.type
-            loadedData = gson.fromJson(fileContents, arrayListTutorialType)
+            loadedData = gson.fromJson(intentFileContent, arrayListTutorialType)
             Log.e("Load",loadedData.toString())
 
             // create Category-Entry from Entries in Items
@@ -115,10 +132,10 @@ class MainActivity : AppCompatActivity() {
                 //appDb.entryDao().insert(entry)
                 appDb.itemDao().insertAll(loadedData)
             }
-            Toast.makeText(applicationContext, "Intention received", Toast.LENGTH_SHORT).show()
+            Toast.makeText(applicationContext, "Einkaufsliste importiert", Toast.LENGTH_SHORT).show()
         }
         catch (e: Exception){
-            Toast.makeText(applicationContext, "Intention-Error: ${e.message}", Toast.LENGTH_SHORT).show()
+            Toast.makeText(applicationContext, "Fehler beim Importieren der Liste: ${e.message}", Toast.LENGTH_SHORT).show()
             Log.e("intention",  "Intention-Error: ${e.message}")
         }
 
