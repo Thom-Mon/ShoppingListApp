@@ -23,7 +23,6 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.File
-import java.util.ArrayList
 
 
 class MainActivity : AppCompatActivity() {
@@ -85,10 +84,9 @@ class MainActivity : AppCompatActivity() {
 
         val uri = intent.data
 
+        //final data from file that opened the app
         val inputStream = this.contentResolver.openInputStream(uri!!)
         val byteArray = inputStream!!.readBytes()
-
-        //final data from file that opened the app
         val intentFileContent: String = String(byteArray)
 
         var currentIndex = 0
@@ -108,13 +106,26 @@ class MainActivity : AppCompatActivity() {
                 appDb.itemDao().insertAll(loadedData)
             }
 
-            saveToInternalAppStorage(loadedData)
+
+            val filename: String = getFileNameFromUri(uri.pathSegments.toString())
+            saveToInternalAppStorage(loadedData, filename)
+            // extract filename form uri
+            //val filename: String = uri.lastPathSegment.toString().substring(uri.lastPathSegment.toString().lastIndexOf("/") + 1)
+            Log.i("intention-filenameOnly", filename)
             Toast.makeText(applicationContext, "Einkaufsliste importiert", Toast.LENGTH_SHORT).show()
         }
         catch (e: Exception){
             Toast.makeText(applicationContext, "Fehler beim Importieren der Liste: ${e.message}", Toast.LENGTH_SHORT).show()
             Log.e("intention",  "Intention-Error: ${e.message}")
         }
+    }
+
+    // gets the fileName from the uri without the extension .hai, the extension is created if the list is exported again later !
+    private fun getFileNameFromUri(uri: String): String
+    {
+        var fileName = uri.substring(uri.lastIndexOf("/") + 1)
+
+        return fileName.substring(0, fileName.lastIndexOf(".hai"))
     }
 
     private fun extractCategoriesFromItems(loadedData: java.util.ArrayList<Item>)
@@ -162,16 +173,14 @@ class MainActivity : AppCompatActivity() {
     }
 
     // used to store the imported shopping list in the app internal storage
-    private fun saveToInternalAppStorage(loadedData: ArrayList<Item>)
+    private fun saveToInternalAppStorage(loadedData: ArrayList<Item>, filename: String = "Default")
     {
-        var fileName = "ImportedList"
-
-        if(File(applicationContext.filesDir, fileName).exists())
+        if(File(applicationContext.filesDir, filename).exists())
         {
-            File(applicationContext.filesDir, fileName).delete()
+            File(applicationContext.filesDir, filename).delete()
         }
 
-        File(applicationContext.filesDir, fileName).printWriter().use { out ->
+        File(applicationContext.filesDir, filename).printWriter().use { out ->
             out.println(gson.toJson(loadedData))}
     }
 }
