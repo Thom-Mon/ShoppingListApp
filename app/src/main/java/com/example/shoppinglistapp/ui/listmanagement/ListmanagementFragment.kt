@@ -133,7 +133,7 @@ class ListmanagementFragment : Fragment() {
                     {
                         File(requireContext().filesDir, fileName).printWriter().use { out ->
                             out.println(gson.toJson(entries))}
-                        saveFileToDownloads(fileName,gson.toJson(entries))
+                            saveFileToDownloads(fileName,gson.toJson(entries))
                     }
                 }
             }
@@ -220,9 +220,14 @@ class ListmanagementFragment : Fragment() {
 
     private fun saveFileToDownloads(filename : String, fileContent: String) {
         // this is from another example it is working good better than any other example using the MediaStore, MediaStore might be overkill
-        val f = File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS), filename+".hai")
-        f.delete()
-        f.appendText(fileContent)
-        Toast.makeText(requireContext(), "Speicherort: " + Environment.DIRECTORY_DOWNLOADS + "/" + filename+".hai", Toast.LENGTH_LONG).show()
+        try{
+            val f = File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS), filename+".hai")
+            f.delete()
+            f.appendText(fileContent)
+            Toast.makeText(requireContext(), "Speicherort: " + Environment.DIRECTORY_DOWNLOADS + "/" + filename+".hai", Toast.LENGTH_LONG).show()
+        } catch (e: Exception) {
+            Toast.makeText(requireContext(), "Fehler beim Speichern der Liste. Rechte vorhanden?", Toast.LENGTH_LONG).show()
+        }
+
     }
 }
