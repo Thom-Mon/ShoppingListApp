@@ -49,10 +49,6 @@ class MainActivity : AppCompatActivity() {
         when {
             intent?.action == Intent.ACTION_VIEW -> {
                 if ("application/octet-stream" == intent.type) {
-                    //handleSendText(intent) // Handle text being sent
-                    Log.e("Intention-type (in when)", intent.type.toString())
-                    Log.e("intention-content", intent.data.toString())
-
                     loadFromIntent(intent)
                 }
             }
