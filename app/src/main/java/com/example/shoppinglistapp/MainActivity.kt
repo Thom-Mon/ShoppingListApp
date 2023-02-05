@@ -2,7 +2,6 @@ package com.example.shoppinglistapp
 
 import android.content.Intent
 import android.os.Bundle
-import android.os.Environment
 import android.util.Log
 import android.view.Menu
 import android.widget.Toast
@@ -24,6 +23,7 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.File
+import java.util.ArrayList
 
 
 class MainActivity : AppCompatActivity() {
@@ -41,20 +41,10 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         setSupportActionBar(binding.appBarMain.toolbar)
-
-        // getting the intention-filter that opens the App
-
         appDb = AppDatabase.getDatabase(this)
 
+        // getting the intention-filter that opens the App
         val intent = intent
-        if(intent.data.toString() != "null")
-        {
-            Log.e("intention",intent.data.toString())
-            Log.e("Intention-type (in if)", intent.type.toString())
-            Log.e("Intention-action", intent.action.toString())
-
-
-        }
 
         when {
             intent?.action == Intent.ACTION_VIEW -> {
@@ -65,15 +55,9 @@ class MainActivity : AppCompatActivity() {
 
                     loadFromIntent(intent)
                 }
-
             }
         }
 
-
-        /*binding.appBarMain.fab.setOnClickListener { view ->
-            Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                .setAction("Action", null).show()
-        }*/
         val drawerLayout: DrawerLayout = binding.drawerLayout
         val navView: NavigationView = binding.navView
         val navController = findNavController(R.id.nav_host_fragment_content_main)
@@ -87,8 +71,6 @@ class MainActivity : AppCompatActivity() {
         setupActionBarWithNavController(navController, appBarConfiguration)
         navView.setupWithNavController(navController)
     }
-
-
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         // Inflate the menu; this adds items to the action bar if it is present.
@@ -129,17 +111,16 @@ class MainActivity : AppCompatActivity() {
                 //appDb.entryDao().insert(entry)
                 appDb.itemDao().insertAll(loadedData)
             }
+
+            saveToInternalAppStorage(loadedData)
             Toast.makeText(applicationContext, "Einkaufsliste importiert", Toast.LENGTH_SHORT).show()
         }
         catch (e: Exception){
             Toast.makeText(applicationContext, "Fehler beim Importieren der Liste: ${e.message}", Toast.LENGTH_SHORT).show()
             Log.e("intention",  "Intention-Error: ${e.message}")
         }
-
-        //val inputStream: InputStream = File (intent.data.toString()).inputStream()
-        //val inputString = inputStream.reader().use {it.readText()}
-        //Log.d("Intention: Reading InputStream",inputString)
     }
+
     private fun extractCategoriesFromItems(loadedData: java.util.ArrayList<Item>)
     {
         var categories = mutableListOf<String>()
@@ -182,5 +163,19 @@ class MainActivity : AppCompatActivity() {
             // write contents from JSON-String to DB
             appDb.categoryDao().insertAll(responseBody)
         }
+    }
+
+    // used to store the imported shopping list in the app internal storage
+    private fun saveToInternalAppStorage(loadedData: ArrayList<Item>)
+    {
+        var fileName = "ImportedList"
+
+        if(File(applicationContext.filesDir, fileName).exists())
+        {
+            File(applicationContext.filesDir, fileName).delete()
+        }
+
+        File(applicationContext.filesDir, fileName).printWriter().use { out ->
+            out.println(gson.toJson(loadedData))}
     }
 }

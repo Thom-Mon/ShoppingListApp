@@ -131,10 +131,9 @@ class ListmanagementFragment : Fragment() {
 
                     withContext(Dispatchers.Main)
                     {
-                        Log.e("ALL_ENTRIES",entries.toString())
                         File(requireContext().filesDir, fileName).printWriter().use { out ->
                             out.println(gson.toJson(entries))}
-                        saveFile(fileName,gson.toJson(entries))
+                        saveFileToDownloads(fileName,gson.toJson(entries))
                     }
                 }
             }
@@ -219,11 +218,11 @@ class ListmanagementFragment : Fragment() {
     }
 
 
-    private fun saveFile(filename : String, fileContent: String) {
+    private fun saveFileToDownloads(filename : String, fileContent: String) {
         // this is from another example it is working good better than any other example using the MediaStore, MediaStore might be overkill
-        // save to .txt-File for debugging later redo with own filetype to open app directly with that type
-            val f = File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS), filename+".hai")
-            f.delete()
-            f.appendText(fileContent)
+        val f = File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS), filename+".hai")
+        f.delete()
+        f.appendText(fileContent)
+        Toast.makeText(requireContext(), "Speicherort: " + Environment.DIRECTORY_DOWNLOADS + "/" + filename+".hai", Toast.LENGTH_LONG).show()
     }
 }
