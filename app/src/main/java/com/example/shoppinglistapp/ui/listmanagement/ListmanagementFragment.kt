@@ -1,16 +1,16 @@
 package com.example.shoppinglistapp.ui.listmanagement
 
-import android.content.ContentValues
-import android.net.Uri
+import android.content.res.ColorStateList
+import android.graphics.Color
 import android.os.Bundle
 import android.os.Environment
-import android.provider.MediaStore
 import android.text.SpannableStringBuilder
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -27,7 +27,6 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.File
-import java.time.Instant
 
 class ListmanagementFragment : Fragment() {
     private var _binding: FragmentListmanagementBinding? = null
@@ -58,8 +57,12 @@ class ListmanagementFragment : Fragment() {
         recyclerView.adapter = adapter
 
 
-        binding.btnSaveToFile.setOnClickListener {
+        binding.btnSaveToApp.setOnClickListener {
             saveToExternalStorage()
+        }
+
+        binding.btnSaveToDownload.setOnClickListener {
+            saveToExternalStorage(true)
         }
 
         binding.btnLoadFromFile.setOnClickListener {
@@ -105,7 +108,7 @@ class ListmanagementFragment : Fragment() {
         }
     }
 
-    private fun saveToExternalStorage()
+    private fun saveToExternalStorage(isExporting: Boolean = false)
     {
         var fileName = "Default"
         //-> saving to JSON for easy get it back
@@ -133,7 +136,10 @@ class ListmanagementFragment : Fragment() {
                     {
                         File(requireContext().filesDir, fileName).printWriter().use { out ->
                             out.println(gson.toJson(entries))}
+                        if(isExporting)
+                        {
                             saveFileToDownloads(fileName,gson.toJson(entries))
+                        }
                     }
                 }
             }
@@ -153,6 +159,15 @@ class ListmanagementFragment : Fragment() {
         if(binding.entryFilename.text!!.isNotEmpty())
         {
             filename = binding.entryFilename.text.toString()
+            binding.textInputLayoutFilename.boxBackgroundColor = Color.WHITE
+
+        }
+        else
+        {
+            binding.textInputLayoutFilename.boxBackgroundColor = Color.rgb(244,178,178)
+
+            Toast.makeText(requireContext(), "Keinen Dateinamen zum Laden eingegeben!", Toast.LENGTH_SHORT).show()
+            return
         }
 
         var currentIndex = 0
@@ -177,7 +192,7 @@ class ListmanagementFragment : Fragment() {
             Toast.makeText(requireContext(), "Datei geladen: ${filename}", Toast.LENGTH_SHORT).show()
         }
         catch (e: Exception){
-            Toast.makeText(requireContext(), "Fehler beim Laden: ${e.message}", Toast.LENGTH_SHORT).show()
+            Toast.makeText(requireContext(), "Fehler beim Laden: Datei nicht gefunden!", Toast.LENGTH_SHORT).show()
         }
     }
 
