@@ -17,7 +17,7 @@ class CustomAdapter(private val mList: List<ElementsViewModel>): RecyclerView.Ad
     private var listener: OnItemsClickListener? = null
 
     interface OnItemsClickListener {
-        fun onItemClick(elementsViewModel: ElementsViewModel, buttonId: Int)
+        fun onItemClick(elementsViewModel: ElementsViewModel, buttonId: Int, filename: String)
     }
 
     fun setWhenClickListener(listener: OnItemsClickListener?) {
@@ -47,11 +47,18 @@ class CustomAdapter(private val mList: List<ElementsViewModel>): RecyclerView.Ad
         holder.deleteCard.setOnClickListener(View.OnClickListener {
             Log.e("Tag", elementsViewModel.name)
             if (listener != null) {
-                listener!!.onItemClick(elementsViewModel, 0)
+                listener!!.onItemClick(elementsViewModel, 0,elementsViewModel.name)
             }
         })
 
         holder.textView.text = elementsViewModel.name
+
+        holder.textView.setOnClickListener(View.OnClickListener {
+            Log.e("Tag on Name click", elementsViewModel.name)
+            if (listener != null) {
+                listener!!.onItemClick(elementsViewModel, 1,elementsViewModel.name)
+            }
+        })
     }
 
     // return the number of the items in the list

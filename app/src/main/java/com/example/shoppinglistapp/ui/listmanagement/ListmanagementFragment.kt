@@ -69,9 +69,41 @@ class ListmanagementFragment : Fragment() {
             loadFromExternalStorage()
         }
 
+        // recyclerview button listener Implementation
+        adapter.setWhenClickListener(object : CustomAdapter.OnItemsClickListener {
+            override fun onItemClick(elementsViewModel: ElementsViewModel, buttonId: Int, filename: String) {
+                if(buttonId == 1){
+                    if(filename.isNotEmpty())
+                    {
+                        binding.entryFilename.setText(filename)
+                    }
+                }
+                else if(buttonId == 0){
+                    Log.e("Button","Button 0 pressed (DELETION)" + filename)
+                    deleteInternalFile(filename)
+                    refreshRecyclerView()
+                }
+            }
+        })
+
         refreshRecyclerView()
 
         return root
+    }
+
+    private fun deleteInternalFile(filename: String)
+    {
+        //TODO: Implement
+        Log.e("Tag-FILENAME TO DELETE:" , "->$filename<-")
+        try {
+            if(File(requireContext().filesDir, filename).exists())
+            {
+                File(requireContext().filesDir, filename).delete()
+            }
+        } catch (e: Exception)
+        {
+            Toast.makeText(requireContext(), "Fehler beim Löschen der Liste", Toast.LENGTH_SHORT).show()
+        }
     }
 
     private fun refreshRecyclerView()
