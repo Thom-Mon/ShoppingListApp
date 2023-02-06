@@ -178,7 +178,6 @@ class ListmanagementFragment : Fragment() {
         }
         Toast.makeText(requireContext(), "Datei gespeichert: $fileName", Toast.LENGTH_SHORT).show()
 
-
         // add new file to recyclerview
         refreshRecyclerView()
     }
