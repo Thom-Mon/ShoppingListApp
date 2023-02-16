@@ -107,7 +107,8 @@ class MainActivity : AppCompatActivity() {
             }
 
 
-            val filename: String = getFileNameFromUri(uri.pathSegments.toString())
+            val filename: String = getFileNameFromUri(uri.lastPathSegment.toString())
+
             saveToInternalAppStorage(loadedData, filename)
             // extract filename form uri
             //val filename: String = uri.lastPathSegment.toString().substring(uri.lastPathSegment.toString().lastIndexOf("/") + 1)
@@ -118,6 +119,7 @@ class MainActivity : AppCompatActivity() {
             Toast.makeText(applicationContext, "Fehler beim Importieren der Liste: ${e.message}", Toast.LENGTH_SHORT).show()
             Log.e("intention",  "Intention-Error: ${e.message}")
         }
+        reloadFragment()
     }
 
     // gets the fileName from the uri without the extension .hai, the extension is created if the list is exported again later !
@@ -182,5 +184,28 @@ class MainActivity : AppCompatActivity() {
 
         File(applicationContext.filesDir, filename).printWriter().use { out ->
             out.println(gson.toJson(loadedData))}
+    }
+
+    private fun reloadFragment()
+    {
+
+        /*val fragMgr: FragmentManager = supportFragmentManager
+        val fragTrans: FragmentTransaction = fragMgr.beginTransaction()
+
+        val myFragment = ShoppinglistFragment() //my custom fragment
+
+
+        fragTrans.replace(android.R.id.content, myFragment, "Tag")
+        fragTrans.addToBackStack(null)
+        //fragTrans.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
+        fragTrans.commit()*/
+        //intent.action = "None"
+        //finish();
+        //overridePendingTransition(0, 0);
+        //startActivity(intent);
+
+        //overridePendingTransition(0, 0);
+
+
     }
 }
