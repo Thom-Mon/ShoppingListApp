@@ -18,7 +18,6 @@ import com.example.shoppinglistapp.Dao.Category.Category
 import com.example.shoppinglistapp.Dao.Item.Item
 import com.example.shoppinglistapp.R
 import com.example.shoppinglistapp.databinding.FragmentShoppinglistBinding
-import com.google.android.material.internal.ViewUtils.hideKeyboard
 import com.google.gson.Gson
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
@@ -68,9 +67,9 @@ class ShoppinglistFragment : Fragment() {
 
                             addCategory(it.name)
                             for (item in items) {
-                                addItem(item)
+                                addItemToView(item)
                             }
-                            addPlusButton(it)
+                            addItemsByCategory(it)
                         }
                     }
                 }
@@ -88,7 +87,7 @@ class ShoppinglistFragment : Fragment() {
         return root
     }
 
-    private fun addItem(item: Item, index: Int = 0) {
+    private fun addItemToView(item: Item, index: Int = 0) {
 
 
         val product_layout = getLayoutInflater().inflate(R.layout.product_linearlayout, null, false)
@@ -144,7 +143,7 @@ class ShoppinglistFragment : Fragment() {
         }
     }
 
-    private fun addPlusButton(category: Category)
+    private fun addItemsByCategory(category: Category)
     {
         val addProduct_layout = getLayoutInflater().inflate(R.layout.add_product_linearlayout, null, false)
         val shoppinglist_layout = binding.layoutShoppingList
@@ -157,13 +156,13 @@ class ShoppinglistFragment : Fragment() {
             if(productname.isNotEmpty())
             {
                 getLastInsertedId()
-                val newItem = Item(null, productname.toString(), category.name,0 )
+                val newItem = Item(null, productname.toString(), category.name,0 ) // mark_ new content uuid
                 // add the item just before the plus-button position
-                addProduct(newItem)
+                insertItemToDb(newItem)
                 hideKeyboard()
 
                 val newShowItem = Item(lastInsertedItem.id,productname.toString(), category.name,0)
-                addItem(newShowItem, shoppinglist_layout.indexOfChild(addProduct_layout))
+                addItemToView(newShowItem, shoppinglist_layout.indexOfChild(addProduct_layout))
                 productname.clear()
 
             }
@@ -176,11 +175,11 @@ class ShoppinglistFragment : Fragment() {
                     getLastInsertedId()
                     val newItem = Item(null, productname.toString(), category.name,0 )
                     // add the item just before the plus-button position
-                    addProduct(newItem)
+                    insertItemToDb(newItem)
                     hideKeyboard()
 
                     val newShowItem = Item(lastInsertedItem.id,productname.toString(), category.name,0)
-                    addItem(newShowItem, shoppinglist_layout.indexOfChild(addProduct_layout))
+                    addItemToView(newShowItem, shoppinglist_layout.indexOfChild(addProduct_layout))
                     productname.clear()
                 }
 
@@ -190,7 +189,7 @@ class ShoppinglistFragment : Fragment() {
         })
     }
 
-    private fun addProduct(item: Item)
+    private fun insertItemToDb(item: Item)
     {
         GlobalScope.launch {
             appDb.itemDao().insert(item)

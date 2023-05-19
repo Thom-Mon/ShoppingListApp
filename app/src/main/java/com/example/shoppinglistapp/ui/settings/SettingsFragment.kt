@@ -1,11 +1,8 @@
 package com.example.shoppinglistapp.ui.settings
 
-import android.app.Activity
-import android.content.Context
 import android.os.Bundle
 import android.util.Log
 import android.view.*
-import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
@@ -26,7 +23,6 @@ import retrofit2.Callback
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
-import java.io.File
 
 const val BASE_URL = "http://192.168.185.38/LocalStorager/"
 class SettingsFragment : Fragment() {
@@ -63,7 +59,7 @@ class SettingsFragment : Fragment() {
         }
 
         binding.btnCallApi.setOnClickListener {
-            callApi()
+            callApiGetCategory()
             callApiGetItems()
         }
 
@@ -126,16 +122,19 @@ class SettingsFragment : Fragment() {
         }
     }
 
-    fun callApi()
+    fun callApiGetCategory()
     {
+        // sets generally the retrofit builder
         val retrofitBuilder = Retrofit.Builder()
             .addConverterFactory(GsonConverterFactory.create())
             .baseUrl(BASE_URL) //TODO: BaseURL An Pi-Zero anpassen!!!
             .build()
             .create(ApiInterface_Category::class.java)
 
+        // set the specific url to get the data -> here from Category
         val retrofitData = retrofitBuilder.getData_Category()
 
+        // do the actual call and handle the response
         retrofitData.enqueue(object : Callback<List<Category>?> {
             override fun onResponse(
                 call: Call<List<Category>?>,
@@ -148,7 +147,7 @@ class SettingsFragment : Fragment() {
                     Toast.makeText(context, "Daten erhalten: " + category.name,Toast.LENGTH_SHORT).show()
                 }
 
-                insertResponseToDB(responseBody)
+                insertResponseToDBCategory(responseBody)
             }
 
             override fun onFailure(call: Call<List<Category>?>, t: Throwable) {
@@ -297,7 +296,7 @@ class SettingsFragment : Fragment() {
         }
     }
 
-    private fun insertResponseToDB(responseBody: List<Category>)
+    private fun insertResponseToDBCategory(responseBody: List<Category>)
     {
 
         GlobalScope.launch(Dispatchers.IO) {
