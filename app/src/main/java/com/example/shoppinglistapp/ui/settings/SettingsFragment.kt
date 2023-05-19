@@ -124,37 +124,52 @@ class SettingsFragment : Fragment() {
 
     fun callApiGetCategory()
     {
-        // sets generally the retrofit builder
-        val retrofitBuilder = Retrofit.Builder()
-            .addConverterFactory(GsonConverterFactory.create())
-            .baseUrl(BASE_URL) //TODO: BaseURL An Pi-Zero anpassen!!!
-            .build()
-            .create(ApiInterface_Category::class.java)
+        lateinit var entries: List<Category>
+        GlobalScope.launch {
+            entries = appDb.categoryDao().getAll()
+            // sets generally the retrofit builder
+            val retrofitBuilder = Retrofit.Builder()
+                .addConverterFactory(GsonConverterFactory.create())
+                .baseUrl(BASE_URL) //TODO: BaseURL An Pi-Zero anpassen!!!
+                .build()
+                .create(ApiInterface_Category::class.java)
 
-        // set the specific url to get the data -> here from Category
-        val retrofitData = retrofitBuilder.getData_Category()
+            // set the specific url to get the data -> here from Category
+            val retrofitData = retrofitBuilder.getData_Category()
 
-        // do the actual call and handle the response
-        retrofitData.enqueue(object : Callback<List<Category>?> {
-            override fun onResponse(
-                call: Call<List<Category>?>,
-                response: Response<List<Category>?>
-            ) {
-                val responseBody = response.body()!!
-                for (category in responseBody)
-                {
-                    Log.e("Response", category.name!!)
-                    Toast.makeText(context, "Daten erhalten: " + category.name,Toast.LENGTH_SHORT).show()
+            // do the actual call and handle the response
+            retrofitData.enqueue(object : Callback<List<Category>?> {
+                override fun onResponse(
+                    call: Call<List<Category>?>,
+                    response: Response<List<Category>?>
+                ) {
+                    val responseBody = response.body()!!
+                    val categoriesToBeInserted = mutableListOf<Category>()
+                    for (category in responseBody)
+                    {
+                        // check if an category uuid already exists on server if so do not insert it into
+                        if(entries.any { categoryCompare -> categoryCompare.uuid == category.uuid })
+                        {
+                            continue
+                        }
+                        else
+                        {
+                            categoriesToBeInserted.add(category)
+                        }
+                    }
+
+                    if( categoriesToBeInserted.size > 0)
+                    {
+                        insertResponseToDBCategory(categoriesToBeInserted)
+                    }
                 }
 
-                insertResponseToDBCategory(responseBody)
-            }
-
-            override fun onFailure(call: Call<List<Category>?>, t: Throwable) {
-                Log.e("Response", "Something went wrong is the URL of Server correct?")
-                Toast.makeText(context, t.toString(),Toast.LENGTH_SHORT).show()
-            }
-        })
+                override fun onFailure(call: Call<List<Category>?>, t: Throwable) {
+                    Log.e("Response", "Something went wrong is the URL of Server correct?")
+                    Toast.makeText(context, t.toString(), Toast.LENGTH_SHORT).show()
+                }
+            })
+        }
     }
 
     // POST only the products with status 0
@@ -206,34 +221,49 @@ class SettingsFragment : Fragment() {
     }
     fun callApiGetItems()
     {
-        val retrofitBuilder = Retrofit.Builder()
-            .addConverterFactory(GsonConverterFactory.create())
-            .baseUrl(BASE_URL) //TODO: BaseURL An Pi-Zero anpassen!!!
-            .build()
-            .create(ApiInterface_Item::class.java)
+        lateinit var entries: List<Item>
+        GlobalScope.launch {
+            entries = appDb.itemDao().getAll()
+            val retrofitBuilder = Retrofit.Builder()
+                .addConverterFactory(GsonConverterFactory.create())
+                .baseUrl(BASE_URL) //TODO: BaseURL An Pi-Zero anpassen!!!
+                .build()
+                .create(ApiInterface_Item::class.java)
 
-        val retrofitData = retrofitBuilder.getDataItem()
+            val retrofitData = retrofitBuilder.getDataItem()
 
-        retrofitData.enqueue(object : Callback<List<Item>?> {
-            override fun onResponse(
-                call: Call<List<Item>?>,
-                response: Response<List<Item>?>
-            ) {
-                val responseBody = response.body()!!
-                for (category in responseBody)
-                {
-                    Log.e("Response", category.name!!)
-                    Toast.makeText(context, "Daten erhalten: " + category.name,Toast.LENGTH_SHORT).show()
+            retrofitData.enqueue(object : Callback<List<Item>?> {
+                override fun onResponse(
+                    call: Call<List<Item>?>,
+                    response: Response<List<Item>?>
+                ) {
+                    val responseBody = response.body()!!
+                    val itemsToBeInserted = mutableListOf<Item>()
+                    for (item in responseBody)
+                    {
+                        // check if item already exists if so dont insert to list and db
+                        if(entries.any { itemCompare -> itemCompare.uuid == item.uuid })
+                        {
+                            continue
+                        }
+                        else
+                        {
+                            itemsToBeInserted.add(item)
+                        }
+                    }
+
+                    if(itemsToBeInserted.size > 0)
+                    {
+                        insertResponseToDbItem(itemsToBeInserted)
+                    }
                 }
 
-                insertResponseToDbItem(responseBody)
-            }
-
-            override fun onFailure(call: Call<List<Item>?>, t: Throwable) {
-                Log.e("Response", "Something went wrong is the URL of Server correct?")
-                Toast.makeText(context, t.toString(),Toast.LENGTH_SHORT).show()
-            }
-        })
+                override fun onFailure(call: Call<List<Item>?>, t: Throwable) {
+                    Log.e("Response", "Something went wrong is the URL of Server correct?")
+                    Toast.makeText(context, t.toString(), Toast.LENGTH_SHORT).show()
+                }
+            })
+        }
     }
 
     private fun insertResponseToDbItem(responseBody: List<Item>)
