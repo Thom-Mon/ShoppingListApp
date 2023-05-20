@@ -64,12 +64,12 @@ class SettingsFragment : Fragment() {
         }
 
         binding.btnCallApiPOST.setOnClickListener {
-            callApi_Post()
+            callApi_Post_Category()
             callApi_Post_Items()
         }
 
         binding.btnCallApiPOSTDownload.setOnClickListener {
-            callApi_Post()
+            callApi_Post_Category()
             callApi_Post_Items(true)
         }
 
@@ -173,7 +173,7 @@ class SettingsFragment : Fragment() {
     }
 
     // POST only the products with status 0
-    fun callApi_Post()
+    fun callApi_Post_Category()
     {
         lateinit var entries: List<Category>
         GlobalScope.launch {
@@ -187,9 +187,7 @@ class SettingsFragment : Fragment() {
                         .build()
                         .create(ApiInterface_Category::class.java)
 
-                    // sets the id to null, to make on get request possible to set all ids freely (val in category.kt was changed to var)
-                    //entries.onEach { it.id = null }
-                    //val req_category = Category(1, "Post-Kategorie")
+                    // sends entries with POST to "c=pages&a=response"
                     val retrofitData = retrofitBuilder.sendDataCategory(entries)
 
                     retrofitData.enqueue(object : Callback<List<Category>?> {
@@ -289,7 +287,7 @@ class SettingsFragment : Fragment() {
                         .create(ApiInterface_Item::class.java)
 
 
-                    // if download then use other call to server to get Data
+                    // if download then use other call to server to get Data too
                     var retrofitData = retrofitBuilder.sendDataItem(entries)
                     if(download)
                     {
