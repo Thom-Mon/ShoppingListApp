@@ -1,15 +1,12 @@
 [
-{"category":"Kühltheke","name":"Schoko-Eis","id":null,"status":"0"},
-{"category":"Kühltheke","name":"Vanille-Eis","id":null,"status":"1"},
-{"category":"Kühltheke","name":"Erdbeer-Eis","id":null,"status":"0"},
-{"category":"Wurstwaren","name":"Frankfurter","id":null,"status":"0"},
-{"category":"Wurstwaren","name":"Deutschländer","id":null,"status":"0"},
-{"category":"Wurstwaren","name":"Bockwurst","id":null,"status":"0"},
-{"category":"Wurstwaren","name":"Schinken Serano","id":null,"status":"0"},
-{"category":"Wurstwaren","name":"Hackfleisch","id":null,"status":"0"},
-{"category":"Wurstwaren","name":"Rindersteak","id":null,"status":"0"},
-{"category":"Grundnahrungsmittel","name":"Brot","id":null,"status":"0"},
-{"category":"Grundnahrungsmittel","name":"Milch","id":null,"status":"0"},
-{"category":"Grundnahrungsmittel","name":"Eier","id":null,"status":"0"},
-{"category":"Grundnahrungsmittel","name":"Toast","id":null,"status":"0"}
+{"category": "Category4","deleted": false,"id": null,"name": "Produkt A","status": 0,"uuid": "94e3aed7-4862-409c-9f4a-bbd6ef11d172"},
+{"category": "Category4","deleted": false,"id": null,"name": "Produkt B","status": 0,"uuid": "94e3aed7-4862-409c-9f4a-bbd6ef11d173"},
+{"category": "Category4","deleted": false,"id": null,"name": "Produkt C","status": 0,"uuid": "94e3aed7-4862-409c-9f4a-bbd6ef11d174"},
+{"category": "Category4","deleted": false,"id": null,"name": "Produkt D","status": 0,"uuid": "94e3aed7-4862-409c-9f4a-bbd6ef11d175"},
+{"category": "Category5","deleted": false,"id": null,"name": "Produkt E","status": 0,"uuid": "94e3aed7-4862-409c-9f4a-bbd6ef11d176"},
+{"category": "Category5","deleted": false,"id": null,"name": "Produkt F","status": 0,"uuid": "94e3aed7-4862-409c-9f4a-bbd6ef11d177"},
+{"category": "Category7","deleted": false,"id": null,"name": "Produkt G","status": 0,"uuid": "94e3aed7-4862-409c-9f4a-bbd6ef11d178"},
+{"category": "Category6","deleted": false,"id": null,"name": "Produkt H","status": 0,"uuid": "94e3aed7-4862-409c-9f4a-bbd6ef11d179"},
+{"category": "Category6","deleted": false,"id": null,"name": "Produkt I","status": 0,"uuid": "94e3aed7-4862-409c-9f4a-bbd6ef11d180"},
+{"category": "Category6","deleted": false,"id": null,"name": "Produkt J","status": 1,"uuid": "94e3aed7-4862-409c-9f4a-bbd6ef11d181"}
 ]

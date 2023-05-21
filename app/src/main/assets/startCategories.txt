@@ -1,5 +1,9 @@
 [
-{"name":"Kühltheke","id":null},
-{"name":"Grundnahrungsmittel","id":null},
-{"name":"Wurstwaren","id":null}
+{"deleted":false,"id":null,"name":"Category1","uuid":"8c938f79-75fc-45ea-8173-66cfe63aa4e0"},
+{"deleted":false,"id":null,"name":"Category2","uuid":"8c938f79-76fc-45ea-8173-66cfe63aa4e0"},
+{"deleted":false,"id":null,"name":"Category3","uuid":"8c938f79-77fc-45ea-8173-66cfe63aa4e0"},
+{"deleted":false,"id":null,"name":"Category4","uuid":"8c938f79-78fc-45ea-8173-66cfe63aa4e0"},
+{"deleted":false,"id":null,"name":"Category5","uuid":"8c938f79-79fc-45ea-8173-66cfe63aa4e0"},
+{"deleted":false,"id":null,"name":"Category6","uuid":"8c938f79-80fc-45ea-8173-66cfe63aa4e0"},
+{"deleted":false,"id":null,"name":"Category7","uuid":"8c938f79-81fc-45ea-8173-66cfe63aa4e0"}
 ]
