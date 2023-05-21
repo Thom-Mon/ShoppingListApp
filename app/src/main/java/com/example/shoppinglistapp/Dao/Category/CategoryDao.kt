@@ -9,6 +9,9 @@ interface CategoryDao {
     @Query("SELECT * FROM category_table")
     fun getAll(): List<Category>
 
+    @Query("SELECT * FROM category_table WHERE deleted != 1")
+    fun getAllNotDeleted(): List<Category>
+
     @Query("SELECT * FROM category_table WHERE id LIKE :id LIMIT 1")
     suspend fun findById(id: Int): Category
 
@@ -17,6 +20,9 @@ interface CategoryDao {
 
     @Delete
     suspend fun delete(category: Category)
+
+    @Query("UPDATE category_table SET deleted = 1 WHERE id = :id")
+    suspend fun softDelete(id: Int)
 
     @Query("DELETE FROM category_table")
     suspend fun  deleteAll()

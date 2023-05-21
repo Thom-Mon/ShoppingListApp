@@ -11,8 +11,9 @@ data class Item(
     @ColumnInfo(name = "name") val name: String?,
     @ColumnInfo(name = "category") val category: String?,
     @ColumnInfo(name = "status") val status: Int?,
-    @ColumnInfo(name = "uuid") val uuid: String?
+    @ColumnInfo(name = "uuid") val uuid: String?,
+    @ColumnInfo(name = "deleted") val deleted: Boolean?
     ) {
-    constructor(id: Int?, name: String?, category: String?, status: Int?) : this(id, name, category,status, UUID.randomUUID().toString())
+    constructor(id: Int?, name: String?, category: String?, status: Int?) : this(id, name, category,status, UUID.randomUUID().toString(), false)
 }
 

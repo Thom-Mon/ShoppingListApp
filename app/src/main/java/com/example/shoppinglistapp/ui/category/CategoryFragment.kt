@@ -79,7 +79,7 @@ class CategoryFragment : Fragment() {
 
         // Create here the setWhenClickListener für den Adapter
         GlobalScope.launch {
-            entries = appDb.categoryDao().getAll()
+            entries = appDb.categoryDao().getAllNotDeleted()
 
             if(entries.isNotEmpty())
             {
@@ -182,7 +182,7 @@ class CategoryFragment : Fragment() {
         var dataId = 0
         category = appDb.categoryDao().findById(_id)
         items = appDb.itemDao().findByCategory(category.name!!)
-        appDb.categoryDao().delete(category)
+        appDb.categoryDao().softDelete(category.id!!)
         // delete all products connected to the category
         appDb.itemDao().deleteItems(items)
 

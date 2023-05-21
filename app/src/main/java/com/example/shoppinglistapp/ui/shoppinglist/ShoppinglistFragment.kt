@@ -55,7 +55,7 @@ class ShoppinglistFragment : Fragment() {
         lateinit var items: List<Item>
 
         GlobalScope.launch {
-            categories = appDb.categoryDao().getAll()
+            categories = appDb.categoryDao().getAllNotDeleted()
 
             if(categories.isNotEmpty())
             {
