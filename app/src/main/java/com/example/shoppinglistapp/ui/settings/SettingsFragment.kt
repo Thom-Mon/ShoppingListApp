@@ -12,12 +12,14 @@ import com.example.shoppinglistapp.Dao.Item.Item
 import com.example.shoppinglistapp.databinding.FragmentSettingsBinding
 import com.example.shoppinglistapp.retrofit.ApiInterface_Category
 import com.example.shoppinglistapp.retrofit.ApiInterface_Item
+import com.example.shoppinglistapp.showConfirmationDialog
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import okhttp3.internal.Util
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -55,7 +57,9 @@ class SettingsFragment : Fragment() {
         }
 
         binding.btnDeleteDb.setOnClickListener {
-            deleteAll()
+            showConfirmationDialog("Löschen bestätigen", "Wollen Sie die aktuelle Einkaufsliste wirklich löschen?") {
+                deleteAll()
+            }
         }
 
         binding.btnCallApi.setOnClickListener {

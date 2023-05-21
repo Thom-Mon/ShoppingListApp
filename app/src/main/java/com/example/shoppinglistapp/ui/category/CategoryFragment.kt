@@ -17,6 +17,7 @@ import com.example.shoppinglistapp.Dao.Item.Item
 import com.example.shoppinglistapp.adapter.CustomAdapter
 import com.example.shoppinglistapp.adapter.ElementsViewModel
 import com.example.shoppinglistapp.databinding.FragmentCategoryBinding
+import com.example.shoppinglistapp.showConfirmationDialog
 import com.google.gson.Gson
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
@@ -68,8 +69,10 @@ class CategoryFragment : Fragment() {
                 }
                 else if(buttonId == 0){
                     Log.e("Button","Button 0 pressed (DELETION)")
-                    GlobalScope.launch {
-                        deleteData(elementsViewModel.id.toInt())
+                    showConfirmationDialog("Kategorie löschen", "Wollen Sie die Kategorie wirklich entfernen?"){
+                        GlobalScope.launch {
+                            deleteData(elementsViewModel.id.toInt())
+                        }
                     }
                 }
             }

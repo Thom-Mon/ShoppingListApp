@@ -20,6 +20,7 @@ import com.example.shoppinglistapp.Dao.Item.Item
 import com.example.shoppinglistapp.adapter.CustomAdapter
 import com.example.shoppinglistapp.adapter.ElementsViewModel
 import com.example.shoppinglistapp.databinding.FragmentListmanagementBinding
+import com.example.shoppinglistapp.showConfirmationDialog
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import kotlinx.coroutines.Dispatchers
@@ -79,9 +80,11 @@ class ListmanagementFragment : Fragment() {
                     }
                 }
                 else if(buttonId == 0){
-                    Log.e("Button","Button 0 pressed (DELETION)" + filename)
-                    deleteInternalFile(filename)
-                    refreshRecyclerView()
+                    showConfirmationDialog("Liste löschen", "Wollen Sie die Liste wirklich löschen?"){
+                        deleteInternalFile(filename)
+                        refreshRecyclerView()
+                    }
+
                 }
             }
         })

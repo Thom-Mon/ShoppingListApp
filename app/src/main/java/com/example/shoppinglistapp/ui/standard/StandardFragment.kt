@@ -18,6 +18,7 @@ import com.example.shoppinglistapp.Dao.Item.Item
 import com.example.shoppinglistapp.R
 import com.example.shoppinglistapp.databinding.FragmentSettingsBinding
 import com.example.shoppinglistapp.databinding.FragmentStandardBinding
+import com.example.shoppinglistapp.showConfirmationDialog
 import com.example.shoppinglistapp.ui.settings.SettingsViewModel
 import com.google.gson.Gson
 import kotlinx.coroutines.Dispatchers
@@ -52,7 +53,7 @@ class StandardFragment : Fragment() {
 
         // fill the standards like the shopping list on startup
         GlobalScope.launch {
-            categories = appDb.categoryDao().getAll()
+            categories = appDb.categoryDao().getAllNotDeleted()
 
             if(categories.isNotEmpty())
             {
@@ -96,17 +97,16 @@ class StandardFragment : Fragment() {
 
         //get the checkbox to do something on checked
         product_layout.findViewById<ImageButton>(R.id.button_reuse_item).setOnClickListener {
-            Log.i("Reuse", "Reuse clicked")
             updateItem(product_layout, item.id!!)
 
             Log.e("Reuse", "Id: " + item.id!!)
         }
 
         product_layout.findViewById<ImageButton>(R.id.button_delete_item).setOnClickListener {
-            Log.i("Reuse", "Deleted clicked")
-            deleteItem(product_layout, item.id!!)
-
-            Log.e("Reuse", "Id: " + item.id!!)
+            showConfirmationDialog("Produkt löschen", "Wollen Sie das Produkt wirklich endgültig löschen?")
+            {
+                deleteItem(product_layout, item.id!!)
+            }
         }
 
         standardlist_layout.addView(product_layout);
