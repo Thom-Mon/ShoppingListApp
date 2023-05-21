@@ -147,8 +147,7 @@ class StandardFragment : Fragment() {
 
         GlobalScope.launch {
             item  = appDb.itemDao().findById(id)
-            appDb.itemDao().delete(item)
-            //deleteData(elementsViewModel.id.toInt())
+            appDb.itemDao().softDelete(item.id!!)
         }
     }
 

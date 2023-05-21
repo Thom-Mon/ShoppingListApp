@@ -1,6 +1,7 @@
 package com.example.energy_meter_roomdb
 
 import androidx.room.*
+import com.example.shoppinglistapp.Dao.Category.Category
 import com.example.shoppinglistapp.Dao.Item.Item
 
 @Dao
@@ -8,6 +9,9 @@ interface ItemDao {
 
     @Query("SELECT * FROM item_table")
     suspend fun getAll(): List<Item>
+
+    @Query("SELECT * FROM item_table WHERE deleted != 1")
+    fun getAllNotDeleted(): List<Item>
 
     @Query("SELECT * FROM item_table Limit 1")
     fun getOne(): Item
@@ -41,6 +45,9 @@ interface ItemDao {
 
     @Delete
     suspend fun delete(item: Item)
+
+    @Query("UPDATE item_table SET deleted = 1 WHERE id = :id")
+    suspend fun softDelete(id: Int)
 
     @Query("DELETE FROM item_table")
     suspend fun  deleteAll()
