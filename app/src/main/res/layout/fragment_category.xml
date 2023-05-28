@@ -28,7 +28,7 @@
         android:alpha="0.8"
         android:hint="@string/add_category"
         app:counterEnabled="true"
-        app:counterMaxLength="20"
+        app:counterMaxLength="40"
 
         android:radius="8dp"
         app:boxStrokeColor="@color/black"
@@ -43,7 +43,7 @@
             android:id="@+id/entry_category"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:maxLength="20"
+            android:maxLength="40"
             android:layout_margin="3dp"
             android:singleLine="true" />
     </com.google.android.material.textfield.TextInputLayout>

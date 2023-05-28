@@ -20,7 +20,7 @@
         android:hint="Produktname eingeben"
         android:layout_marginLeft="7dp"
         android:singleLine="true"
-        android:maxLength="20"
+        android:maxLength="40"
         android:textSize="15dp"
         />
 </LinearLayout>
