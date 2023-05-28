@@ -1,7 +1,6 @@
 package com.example.shoppinglistapp.ui.shoppinglist
 
 import android.app.Activity
-import android.app.AlertDialog
 import android.content.Context
 import android.os.Bundle
 import android.os.Handler
@@ -19,8 +18,8 @@ import com.example.shoppinglistapp.Dao.Category.Category
 import com.example.shoppinglistapp.Dao.Item.Item
 import com.example.shoppinglistapp.R
 import com.example.shoppinglistapp.databinding.FragmentShoppinglistBinding
+import com.example.shoppinglistapp.hideKeyboard
 import com.example.shoppinglistapp.showEditDialog
-import com.google.android.material.internal.ViewUtils.hideKeyboard
 import com.google.gson.Gson
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
@@ -165,24 +164,15 @@ class ShoppinglistFragment : Fragment() {
     {
         val addProduct_layout = getLayoutInflater().inflate(R.layout.add_product_linearlayout, null, false)
         val shoppinglist_layout = binding.layoutShoppingList
-
         val productname = addProduct_layout.findViewById<EditText>(R.id.editText_Item_Name).text
 
         shoppinglist_layout.addView(addProduct_layout);
 
+        // on clicking special plus-button
         addProduct_layout.findViewById<ImageButton>(R.id.add_Item).setOnClickListener {
             if(productname.isNotEmpty())
             {
-                getLastInsertedId()
-                val newItem = Item(null, productname.toString(), category.name,0 ) // mark_ new content uuid
-                // add the item just before the plus-button position
-                insertItemToDb(newItem)
-                hideKeyboard()
-
-                val newShowItem = Item(lastInsertedItem.id,productname.toString(), category.name,0)
-                addItemToView(newShowItem, shoppinglist_layout.indexOfChild(addProduct_layout))
-                productname.clear()
-
+                addProduct(category, addProduct_layout, shoppinglist_layout)
             }
         }
         // on pressing enter within the edittext field for better usability
@@ -190,21 +180,28 @@ class ShoppinglistFragment : Fragment() {
             if (keyCode == KeyEvent.KEYCODE_ENTER && event.action == KeyEvent.ACTION_UP) {
                 if(productname.isNotEmpty())
                 {
-                    getLastInsertedId()
-                    val newItem = Item(null, productname.toString(), category.name,0 )
-                    // add the item just before the plus-button position
-                    insertItemToDb(newItem)
-                    hideKeyboard()
-
-                    val newShowItem = Item(lastInsertedItem.id,productname.toString(), category.name,0)
-                    addItemToView(newShowItem, shoppinglist_layout.indexOfChild(addProduct_layout))
-                    productname.clear()
+                    addProduct(category, addProduct_layout, shoppinglist_layout)
                 }
 
                 return@OnKeyListener true
             }
             false
         })
+    }
+
+    // adding the product within the category
+    private fun addProduct(category: Category,addProduct_layout: View,shoppinglist_layout: LinearLayout){
+        val productname = addProduct_layout.findViewById<EditText>(R.id.editText_Item_Name).text
+
+        getLastInsertedId()
+        val newItem = Item(null, productname.toString(), category.name,0 )
+        // add the item just before the plus-button position
+        insertItemToDb(newItem)
+        hideKeyboard()
+
+        val newShowItem = Item(lastInsertedItem.id,productname.toString(), category.name,0)
+        addItemToView(newShowItem, shoppinglist_layout.indexOfChild(addProduct_layout))
+        productname.clear()
     }
 
     private fun insertItemToDb(item: Item)
@@ -241,18 +238,7 @@ class ShoppinglistFragment : Fragment() {
     }
 
     // Helpers rebase to activity later!!!!!!
-    fun Fragment.hideKeyboard() {
-        view?.let { activity?.hideKeyboard(it) }
-    }
 
-    fun Activity.hideKeyboard() {
-        hideKeyboard(currentFocus ?: View(this))
-    }
-
-    fun Context.hideKeyboard(view: View) {
-        val inputMethodManager = getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
-        inputMethodManager.hideSoftInputFromWindow(view.windowToken, 0)
-    }
 
     private fun animationSlideInText(_view: View, fromLeft: Boolean = false, duration: Long = 250)
     {

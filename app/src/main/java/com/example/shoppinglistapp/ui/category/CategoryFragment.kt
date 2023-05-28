@@ -17,6 +17,7 @@ import com.example.shoppinglistapp.Dao.Item.Item
 import com.example.shoppinglistapp.adapter.CustomAdapter
 import com.example.shoppinglistapp.adapter.ElementsViewModel
 import com.example.shoppinglistapp.databinding.FragmentCategoryBinding
+import com.example.shoppinglistapp.hideKeyboard
 import com.example.shoppinglistapp.showConfirmationDialog
 import com.google.gson.Gson
 import kotlinx.coroutines.Dispatchers
@@ -163,20 +164,6 @@ class CategoryFragment : Fragment() {
                 adapter.notifyItemInserted(data.size-1)
             }
         }
-    }
-
-    // Helpers rebase to activity later!!!!!!
-    fun Fragment.hideKeyboard() {
-        view?.let { activity?.hideKeyboard(it) }
-    }
-
-    fun Activity.hideKeyboard() {
-        hideKeyboard(currentFocus ?: View(this))
-    }
-
-    fun Context.hideKeyboard(view: View) {
-        val inputMethodManager = getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
-        inputMethodManager.hideSoftInputFromWindow(view.windowToken, 0)
     }
 
     private suspend fun deleteData(_id: Int) {
