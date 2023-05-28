@@ -8,6 +8,7 @@
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
     <color name="color_headline">#7A2626</color>
+    <color name="color_textline">#9F2222</color>
     <color name="color_menue_phone">#300715</color>
     <color name="light_grey">#787878</color>
 

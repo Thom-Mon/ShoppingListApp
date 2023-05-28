@@ -21,6 +21,6 @@
     <string name="fragment_headline_standard">Standards wiederherstellen</string>
     <string name="fragment_headline_listmanagement">Listenverwaltung</string>
     <string name="menu_listmanagement">Listenverwaltung</string>
-    <string name="dialog_edit_item_text">Neue Produktbezeichnung eingeben...</string>
+    <string name="dialog_edit_item_text">Bezeichnung eingeben</string>
     <string name="dialog_save_buttontext">Speichern</string>
 </resources>
