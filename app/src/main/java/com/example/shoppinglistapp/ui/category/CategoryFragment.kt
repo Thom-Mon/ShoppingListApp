@@ -7,18 +7,18 @@ import android.text.SpannableStringBuilder
 import android.util.Log
 import android.view.*
 import android.view.inputmethod.InputMethodManager
+import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.example.shoppinglistapp.AppDatabase
+import com.example.shoppinglistapp.*
 import com.example.shoppinglistapp.Dao.Category.Category
 import com.example.shoppinglistapp.Dao.Item.Item
 import com.example.shoppinglistapp.adapter.CustomAdapter
 import com.example.shoppinglistapp.adapter.ElementsViewModel
 import com.example.shoppinglistapp.databinding.FragmentCategoryBinding
-import com.example.shoppinglistapp.hideKeyboard
-import com.example.shoppinglistapp.showConfirmationDialog
 import com.google.gson.Gson
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
@@ -66,13 +66,26 @@ class CategoryFragment : Fragment() {
             override fun onItemClick(elementsViewModel: ElementsViewModel, buttonId: Int, filename: String) {
                 // the button id refers to either delete or edit from the recyclerview
                 if(buttonId == 1){
-                    Log.e("Button","Button 1 pressed")
+                    Log.e("mark_","Button 1 pressed")
                 }
                 else if(buttonId == 0){
-                    Log.e("Button","Button 0 pressed (DELETION)")
+                    Log.e("mark_","Button 0 pressed (DELETION)")
                     showConfirmationDialog("Kategorie löschen", "Wollen Sie die Kategorie wirklich entfernen?"){
                         GlobalScope.launch {
                             deleteData(elementsViewModel.id.toInt())
+                        }
+                    }
+                }
+                else if(buttonId == 2){
+                    Log.e("mark_","Button 2 pressed")
+                    showEditDialog(requireContext(), R.layout.dialog_edit_item, elementsViewModel.name) { newText ->
+                        Log.e("mark_ -> " , newText)
+                        // write new name to Db
+                        lifecycleScope.launch {
+                            updateCategory(elementsViewModel.name, newText, elementsViewModel.id){
+                            // updating the view with new name
+                            binding.recyclerviewCategory.adapter?.notifyDataSetChanged()
+                        }
                         }
                     }
                 }
@@ -164,6 +177,17 @@ class CategoryFragment : Fragment() {
                 adapter.notifyItemInserted(data.size-1)
             }
         }
+    }
+
+    private suspend fun updateCategory(oldName: String, name: String, id: Int, cb: () -> Unit) {
+        withContext(Dispatchers.IO) {
+            appDb.categoryDao().updateCategoryName(name, id)
+            // this function is only needed because of the stupid implementation of category and items
+            appDb.categoryDao().updateItemCategoryName(oldName, name)
+        }
+
+        // Call the callback function to notify the calling function that the update is finished
+        cb()
     }
 
     private suspend fun deleteData(_id: Int) {

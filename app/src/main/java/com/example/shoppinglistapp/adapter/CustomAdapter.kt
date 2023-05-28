@@ -59,6 +59,13 @@ class CustomAdapter(private val mList: List<ElementsViewModel>): RecyclerView.Ad
                 listener!!.onItemClick(elementsViewModel, 1,elementsViewModel.name)
             }
         })
+
+        holder.editButton.setOnClickListener(View.OnClickListener {
+            Log.e("Mark_ on Name click", elementsViewModel.name)
+            if (listener != null) {
+                listener!!.onItemClick(elementsViewModel, 2,elementsViewModel.name)
+            }
+        })
     }
 
     // return the number of the items in the list
@@ -69,5 +76,6 @@ class CustomAdapter(private val mList: List<ElementsViewModel>): RecyclerView.Ad
     class ViewHolder(ItemView: View) : RecyclerView.ViewHolder(ItemView) {
         val textView: TextView = itemView.findViewById(R.id.card_category_name)
         val deleteCard: ImageView = itemView.findViewById(R.id.delete_on_card_view)
+        val editButton: ImageView = itemView.findViewById(R.id.editOnCardView)
     }
 }

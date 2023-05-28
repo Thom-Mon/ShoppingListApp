@@ -237,9 +237,6 @@ class ShoppinglistFragment : Fragment() {
         _binding = null
     }
 
-    // Helpers rebase to activity later!!!!!!
-
-
     private fun animationSlideInText(_view: View, fromLeft: Boolean = false, duration: Long = 250)
     {
         _view.visibility = View.INVISIBLE

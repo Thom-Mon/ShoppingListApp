@@ -24,6 +24,12 @@ interface CategoryDao {
     @Query("UPDATE category_table SET deleted = 1 WHERE id = :id")
     suspend fun softDelete(id: Int)
 
+    @Query("UPDATE category_table SET name = :name WHERE id = :id")
+    suspend fun updateCategoryName(name: String, id: Int)
+
+    @Query("UPDATE item_table SET category = :newName WHERE category = :oldName")
+    suspend fun updateItemCategoryName(oldName: String, newName: String)
+
     @Query("DELETE FROM category_table")
     suspend fun  deleteAll()
 
@@ -34,4 +40,6 @@ interface CategoryDao {
     //get last inserted id
     @Query("SELECT seq FROM sqlite_sequence WHERE name = :tableName")
     abstract fun getSequenceNumber(tableName: String): Long?
+
+
 }
