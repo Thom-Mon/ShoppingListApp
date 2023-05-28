@@ -3,6 +3,8 @@ package com.example.shoppinglistapp
 import android.app.AlertDialog
 import android.content.Context
 import android.content.DialogInterface
+import android.text.Editable
+import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.widget.Button
 import android.widget.EditText
@@ -48,6 +50,22 @@ import kotlinx.coroutines.withContext
 
         // Set the initial text in the EditText
         editText.setText(initialText)
+
+        // TextWatcher Element to use on editText - only save if the textinput is not empty
+        class MyTextWatcher : TextWatcher {
+            override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+            }
+
+            override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+            }
+
+            override fun afterTextChanged(s: Editable?) {
+                val text = s?.toString()
+                saveButton.isEnabled = !text.isNullOrEmpty()}
+        }
+
+        // disable the save button if there is not text in the edittext provided
+        editText.addTextChangedListener(MyTextWatcher())
 
         // Save button click listener
         saveButton.setOnClickListener {
