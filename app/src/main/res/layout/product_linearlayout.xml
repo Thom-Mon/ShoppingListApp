@@ -13,11 +13,21 @@
         />
     <TextView
         android:id="@+id/textView_product"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Placeholder-Productname"
 
         android:textColor="@color/black"
         android:textSize="15dp"/>
+    <ImageButton
+        android:id="@+id/buttonEdit_product"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/ic_baseline_edit_24"
+        android:layout_marginStart="10sp"
+        android:background="@null"
+
+        />
+
 
 </LinearLayout>

@@ -45,7 +45,7 @@ class CustomAdapter(private val mList: List<ElementsViewModel>): RecyclerView.Ad
 
 
         holder.deleteCard.setOnClickListener(View.OnClickListener {
-            Log.e("Tag", elementsViewModel.name)
+            Log.e("Mark_ (holder.deleteCard) listener: ", elementsViewModel.name)
             if (listener != null) {
                 listener!!.onItemClick(elementsViewModel, 0,elementsViewModel.name)
             }
@@ -54,7 +54,7 @@ class CustomAdapter(private val mList: List<ElementsViewModel>): RecyclerView.Ad
         holder.textView.text = elementsViewModel.name
 
         holder.textView.setOnClickListener(View.OnClickListener {
-            Log.e("Tag on Name click", elementsViewModel.name)
+            Log.e("Mark_ on Name click", elementsViewModel.name)
             if (listener != null) {
                 listener!!.onItemClick(elementsViewModel, 1,elementsViewModel.name)
             }

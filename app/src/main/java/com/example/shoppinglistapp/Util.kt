@@ -1,7 +1,11 @@
 package com.example.shoppinglistapp
 
 import android.app.AlertDialog
+import android.content.Context
 import android.content.DialogInterface
+import android.view.LayoutInflater
+import android.widget.Button
+import android.widget.EditText
 import androidx.core.content.ContentProviderCompat.requireContext
 import androidx.fragment.app.Fragment
 import kotlinx.coroutines.withContext
@@ -25,5 +29,37 @@ import kotlinx.coroutines.withContext
 
         val alertDialog: AlertDialog = alertDialogBuilder.create()
         alertDialog.show()
+    }
+
+    fun Fragment.showEditDialog(
+        context: Context,
+        layoutId: Int,
+        initialText: String,
+        onSave: (newText: String) -> Unit
+    ) {
+        val dialogView = LayoutInflater.from(context).inflate(layoutId, null)
+        val dialog = AlertDialog.Builder(context)
+            .setView(dialogView)
+            .setCancelable(true)
+            .create()
+
+        val editText: EditText = dialogView.findViewById(R.id.editText)
+        val saveButton: Button = dialogView.findViewById(R.id.saveButton)
+
+        // Set the initial text in the EditText
+        editText.setText(initialText)
+
+        // Save button click listener
+        saveButton.setOnClickListener {
+            val newText = editText.text.toString()
+            // Call the provided onSave callback to handle the saved data
+            onSave(newText)
+
+            // Dismiss the dialog
+            dialog.dismiss()
+        }
+
+        // Show the dialog
+        dialog.show()
     }
 

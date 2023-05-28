@@ -58,6 +58,9 @@ interface ItemDao {
     @Query("UPDATE item_table SET name=:name, category=:category, status=:status WHERE id = :id")
     suspend fun update(id: Int, name : String , category: String , status: Int)
 
+    @Query("UPDATE item_table SET name=:newName WHERE id = :id")
+    suspend fun updateItemName(newName: String, id: Int)
+
     @Query("UPDATE item_table SET status=:status WHERE id = :id")
     suspend fun updateStatus(id: Int, status: Int)
 

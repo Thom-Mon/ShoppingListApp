@@ -1,6 +1,7 @@
 package com.example.shoppinglistapp.ui.shoppinglist
 
 import android.app.Activity
+import android.app.AlertDialog
 import android.content.Context
 import android.os.Bundle
 import android.os.Handler
@@ -18,6 +19,8 @@ import com.example.shoppinglistapp.Dao.Category.Category
 import com.example.shoppinglistapp.Dao.Item.Item
 import com.example.shoppinglistapp.R
 import com.example.shoppinglistapp.databinding.FragmentShoppinglistBinding
+import com.example.shoppinglistapp.showEditDialog
+import com.google.android.material.internal.ViewUtils.hideKeyboard
 import com.google.gson.Gson
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
@@ -87,6 +90,9 @@ class ShoppinglistFragment : Fragment() {
         return root
     }
 
+    /*
+    * Within here the checkbox logic is design thats why i did the listener on the edit-button in there too
+    * */
     private fun addItemToView(item: Item, index: Int = 0) {
 
 
@@ -100,8 +106,20 @@ class ShoppinglistFragment : Fragment() {
             compoundButton, b -> Log.e("Checkbox", "Checkbox changed")
             removeItem(product_layout, item.id!!)
 
-            Log.e("Button", "Id: " + item.id!!)
+            Log.e("Mark_ Checkbox clicked on: ", "Id: " + item.id!!)
         }
+
+        // this needs some rework the Dialog is not really generic enough
+        product_layout.findViewById<ImageButton>(R.id.buttonEdit_product).setOnClickListener {
+            showEditDialog(requireContext(), R.layout.dialog_edit_item, item.name!!) { newText ->
+                // write new name to Db
+                updateItem(newText, item.id!!)
+
+                // updating the view with new name
+                product_layout.findViewById<TextView>(R.id.textView_product).text = newText
+            }
+        }
+
         if(index != 0)
         {
             shoppinglist_layout.addView(product_layout, index);
@@ -193,6 +211,13 @@ class ShoppinglistFragment : Fragment() {
     {
         GlobalScope.launch {
             appDb.itemDao().insert(item)
+        }
+    }
+
+    private fun updateItem(name: String, id: Int)
+    {
+        GlobalScope.launch {
+            appDb.itemDao().updateItemName(name, id)
         }
     }
 
