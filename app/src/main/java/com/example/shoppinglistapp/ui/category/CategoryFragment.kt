@@ -63,7 +63,7 @@ class CategoryFragment : Fragment() {
 
         // recyclerview button listener Implementation
         adapter.setWhenClickListener(object : CustomAdapter.OnItemsClickListener {
-            override fun onItemClick(elementsViewModel: ElementsViewModel, buttonId: Int, filename: String) {
+            override fun onItemClick(position: Int, elementsViewModel: ElementsViewModel, buttonId: Int, filename: String) {
                 // the button id refers to either delete or edit from the recyclerview
                 if(buttonId == 1){
                     Log.e("mark_","Button 1 pressed")
@@ -79,13 +79,13 @@ class CategoryFragment : Fragment() {
                 else if(buttonId == 2){
                     Log.e("mark_","Button 2 pressed")
                     showEditDialog(requireContext(), R.layout.dialog_edit_item, elementsViewModel.name) { newText ->
-                        Log.e("mark_ -> " , newText)
                         // write new name to Db
                         lifecycleScope.launch {
                             updateCategory(elementsViewModel.name, newText, elementsViewModel.id){
                             // updating the view with new name
-                            binding.recyclerviewCategory.adapter?.notifyDataSetChanged()
-                        }
+                                data[position].name = newText
+                                binding.recyclerviewCategory.adapter?.notifyItemChanged(position)
+                            }
                         }
                     }
                 }
@@ -180,7 +180,7 @@ class CategoryFragment : Fragment() {
     }
 
     private suspend fun updateCategory(oldName: String, name: String, id: Int, cb: () -> Unit) {
-        withContext(Dispatchers.IO) {
+        withContext(Dispatchers.Main) {
             appDb.categoryDao().updateCategoryName(name, id)
             // this function is only needed because of the stupid implementation of category and items
             appDb.categoryDao().updateItemCategoryName(oldName, name)

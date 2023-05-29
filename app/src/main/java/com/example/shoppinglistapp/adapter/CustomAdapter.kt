@@ -17,7 +17,7 @@ class CustomAdapter(private val mList: List<ElementsViewModel>): RecyclerView.Ad
     private var listener: OnItemsClickListener? = null
 
     interface OnItemsClickListener {
-        fun onItemClick(elementsViewModel: ElementsViewModel, buttonId: Int, filename: String)
+        fun onItemClick(position: Int, elementsViewModel: ElementsViewModel, buttonId: Int, filename: String)
     }
 
     fun setWhenClickListener(listener: OnItemsClickListener?) {
@@ -47,7 +47,7 @@ class CustomAdapter(private val mList: List<ElementsViewModel>): RecyclerView.Ad
         holder.deleteCard.setOnClickListener(View.OnClickListener {
             Log.e("Mark_ (holder.deleteCard) listener: ", elementsViewModel.name)
             if (listener != null) {
-                listener!!.onItemClick(elementsViewModel, 0,elementsViewModel.name)
+                listener!!.onItemClick(position, elementsViewModel, 0,elementsViewModel.name)
             }
         })
 
@@ -56,14 +56,14 @@ class CustomAdapter(private val mList: List<ElementsViewModel>): RecyclerView.Ad
         holder.textView.setOnClickListener(View.OnClickListener {
             Log.e("Mark_ on Name click", elementsViewModel.name)
             if (listener != null) {
-                listener!!.onItemClick(elementsViewModel, 1,elementsViewModel.name)
+                listener!!.onItemClick(position, elementsViewModel, 1,elementsViewModel.name)
             }
         })
 
         holder.editButton.setOnClickListener(View.OnClickListener {
             Log.e("Mark_ on Name click", elementsViewModel.name)
             if (listener != null) {
-                listener!!.onItemClick(elementsViewModel, 2,elementsViewModel.name)
+                listener!!.onItemClick(position, elementsViewModel, 2,elementsViewModel.name)
             }
         })
     }
