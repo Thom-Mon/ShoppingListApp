@@ -96,8 +96,6 @@ class StandardFragment : Fragment() {
         //get the checkbox to do something on checked
         product_layout.findViewById<ImageButton>(R.id.button_reuse_item).setOnClickListener {
             updateItem(product_layout, item.id!!)
-
-            Log.e("Reuse", "Id: " + item.id!!)
         }
 
         product_layout.findViewById<ImageButton>(R.id.button_delete_item).setOnClickListener {

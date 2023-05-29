@@ -102,10 +102,8 @@ class ShoppinglistFragment : Fragment() {
 
         //get the checkbox to do something on checked
         product_layout.findViewById<CheckBox>(R.id.deletion_checkbox).setOnCheckedChangeListener {
-            compoundButton, b -> Log.e("Checkbox", "Checkbox changed")
+            compoundButton, b ->
             removeItem(product_layout, item.id!!)
-
-            Log.e("Mark_ Checkbox clicked on: ", "Id: " + item.id!!)
         }
 
         // this needs some rework the Dialog is not really generic enough
