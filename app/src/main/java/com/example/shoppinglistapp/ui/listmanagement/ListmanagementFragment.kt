@@ -17,6 +17,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.shoppinglistapp.AppDatabase
 import com.example.shoppinglistapp.Dao.Category.Category
 import com.example.shoppinglistapp.Dao.Item.Item
+import com.example.shoppinglistapp.R
 import com.example.shoppinglistapp.adapter.CustomAdapter
 import com.example.shoppinglistapp.adapter.ElementsViewModel
 import com.example.shoppinglistapp.databinding.FragmentListmanagementBinding
@@ -72,7 +73,7 @@ class ListmanagementFragment : Fragment() {
 
         // recyclerview button listener Implementation
         adapter.setWhenClickListener(object : CustomAdapter.OnItemsClickListener {
-            override fun onItemClick(elementsViewModel: ElementsViewModel, buttonId: Int, filename: String) {
+            override fun onItemClick(position: Int, elementsViewModel: ElementsViewModel, buttonId: Int, filename: String) {
                 if(buttonId == 1){
                     if(filename.isNotEmpty())
                     {
@@ -80,7 +81,7 @@ class ListmanagementFragment : Fragment() {
                     }
                 }
                 else if(buttonId == 0){
-                    showConfirmationDialog("Liste löschen", "Wollen Sie die Liste wirklich löschen?"){
+                    showConfirmationDialog("Liste löschen", getString(R.string.dialog_list_deletion_warning_text)){
                         deleteInternalFile(filename)
                         refreshRecyclerView()
                     }

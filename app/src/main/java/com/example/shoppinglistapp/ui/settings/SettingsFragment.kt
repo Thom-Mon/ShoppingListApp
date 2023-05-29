@@ -9,6 +9,7 @@ import androidx.lifecycle.ViewModelProvider
 import com.example.shoppinglistapp.AppDatabase
 import com.example.shoppinglistapp.Dao.Category.Category
 import com.example.shoppinglistapp.Dao.Item.Item
+import com.example.shoppinglistapp.R
 import com.example.shoppinglistapp.databinding.FragmentSettingsBinding
 import com.example.shoppinglistapp.retrofit.ApiInterface_Category
 import com.example.shoppinglistapp.retrofit.ApiInterface_Item
@@ -57,7 +58,7 @@ class SettingsFragment : Fragment() {
         }
 
         binding.btnDeleteDb.setOnClickListener {
-            showConfirmationDialog("Löschen bestätigen", "Wollen Sie die aktuelle Einkaufsliste wirklich löschen?") {
+            showConfirmationDialog("Löschen bestätigen", getString(R.string.dialog_shoppinglist_deletion_warning_text)) {
                 deleteAll()
             }
         }

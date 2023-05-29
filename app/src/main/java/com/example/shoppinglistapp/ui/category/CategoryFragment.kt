@@ -70,7 +70,7 @@ class CategoryFragment : Fragment() {
                 }
                 else if(buttonId == 0){
                     Log.e("mark_","Button 0 pressed (DELETION)")
-                    showConfirmationDialog("Kategorie löschen", "Wollen Sie die Kategorie wirklich entfernen?"){
+                    showConfirmationDialog("Kategorie löschen", getString(R.string.dialog_category_deletion_warning_text)){
                         GlobalScope.launch {
                             deleteData(elementsViewModel.id.toInt())
                         }

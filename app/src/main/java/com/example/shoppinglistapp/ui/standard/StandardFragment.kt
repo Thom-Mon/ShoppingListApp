@@ -79,8 +79,6 @@ class StandardFragment : Fragment() {
             }
         }
 
-
-
         return root
     }
 
@@ -103,7 +101,7 @@ class StandardFragment : Fragment() {
         }
 
         product_layout.findViewById<ImageButton>(R.id.button_delete_item).setOnClickListener {
-            showConfirmationDialog("Produkt löschen", "Wollen Sie das Produkt wirklich endgültig löschen?")
+            showConfirmationDialog("Produkt löschen", getString(R.string.dialog_item_deletion_warning_text))
             {
                 deleteItem(product_layout, item.id!!)
             }

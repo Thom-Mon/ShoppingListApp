@@ -23,4 +23,10 @@
     <string name="menu_listmanagement">Listenverwaltung</string>
     <string name="dialog_edit_item_text">Bezeichnung eingeben</string>
     <string name="dialog_save_buttontext">Speichern</string>
+    <!-- User Messages-->
+    <string name="dialog_category_deletion_warning_text">Wollen Sie die Kategorie wirklich entfernen? Alle damit verbundenen Produkte werden ebenfalls entfernt</string>
+    <string name="dialog_list_deletion_warning_text">Wollen Sie die Liste wirklich löschen?</string>
+    <string name="dialog_shoppinglist_deletion_warning_text">Wollen Sie die aktuelle Einkaufsliste wirklich löschen?</string>
+    <string name="dialog_item_deletion_warning_text">Wollen Sie das Produkt wirklich endgültig löschen?</string>
+
 </resources>
