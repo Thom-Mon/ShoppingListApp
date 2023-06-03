@@ -1,5 +1,7 @@
 package com.example.shoppinglistapp.ui.listmanagement
 
+import android.content.ActivityNotFoundException
+import android.content.Intent
 import android.content.res.ColorStateList
 import android.graphics.Color
 import android.os.Bundle
@@ -10,7 +12,9 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.core.content.ContentProviderCompat.requireContext
 import androidx.core.content.ContextCompat
+import androidx.core.content.FileProvider
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -29,6 +33,7 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.File
+import java.io.FileOutputStream
 
 class ListmanagementFragment : Fragment() {
     private var _binding: FragmentListmanagementBinding? = null
@@ -71,6 +76,10 @@ class ListmanagementFragment : Fragment() {
             loadFromExternalStorage()
         }
 
+        binding.btnSendViaSignal.setOnClickListener {
+            openMessengerWithFile()
+        }
+
         // recyclerview button listener Implementation
         adapter.setWhenClickListener(object : CustomAdapter.OnItemsClickListener {
             override fun onItemClick(position: Int, elementsViewModel: ElementsViewModel, buttonId: Int, filename: String) {
@@ -95,6 +104,39 @@ class ListmanagementFragment : Fragment() {
         return root
     }
 
+
+    private fun openMessengerWithFile() {
+        if (binding.entryFilename.text!!.isNotEmpty()) {
+            val filename = binding.entryFilename.text.toString()
+            val file = File(requireContext().filesDir, filename)
+
+            if (!file.exists()) {
+                // File does not exist, handle the error
+                return
+            }
+            val uri = FileProvider.getUriForFile(
+                requireContext(),
+                requireContext().packageName + ".provider",
+                file
+            )
+
+            val intent = Intent(Intent.ACTION_SEND)
+            intent.putExtra(Intent.EXTRA_STREAM, uri)
+            intent.type = "application/x-hai"
+
+            // Grant read permission to the receiving app
+            intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+
+            try {
+                startActivity(Intent.createChooser(intent, "Send File"))
+            } catch (e: ActivityNotFoundException) {
+                Toast.makeText(requireContext(), "No messaging app found.", Toast.LENGTH_SHORT)
+                    .show()
+            }
+        }
+    }
+
+
     private fun deleteInternalFile(filename: String)
     {
         //TODO: Implement
@@ -116,13 +158,6 @@ class ListmanagementFragment : Fragment() {
         data.clear()
         adapter.notifyItemRangeRemoved(0, size)
 
-        // watch out the filesystem read to fast, so it cannot show the newly
-        // created file on the recycler view yet!!! TODO:
-        // Further TODO:
-        // 1. On Click on Item of recycler view delete it on filesystem to
-        // 2. On Click get it to load
-        // 3. On Click get name to textinput to make it possible to save
-        // get list of files stored on phone
         var files: Array<String> = requireContext().fileList()
         var index = 0
         for(file in files)
@@ -151,6 +186,11 @@ class ListmanagementFragment : Fragment() {
         if(binding.entryFilename.text!!.isNotEmpty())
         {
             fileName = binding.entryFilename.text.toString()
+            // if filename does not end with ".hai" set it. needed to send it later and recognize it on other phones
+            if(!fileName.endsWith(".hai"))
+            {
+                fileName += ".hai"
+            }
         }
 
         File(requireContext().filesDir, fileName).delete()
@@ -170,8 +210,11 @@ class ListmanagementFragment : Fragment() {
 
                     withContext(Dispatchers.Main)
                     {
-                        File(requireContext().filesDir, fileName).printWriter().use { out ->
-                            out.println(gson.toJson(entries))}
+                        /*File(requireContext().filesDir, fileName).printWriter().use { out ->
+                            out.println(gson.toJson(entries))}*/ // -> old working version keep until tested! 03.06.2023
+                        FileOutputStream(File(requireContext().filesDir, fileName)).use { outputStream ->
+                            outputStream.write(gson.toJson(entries).toByteArray())
+                        }
                         if(isExporting)
                         {
                             saveFileToDownloads(fileName,gson.toJson(entries))
