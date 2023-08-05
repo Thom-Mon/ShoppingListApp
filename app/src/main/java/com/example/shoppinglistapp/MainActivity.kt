@@ -100,19 +100,15 @@ class MainActivity : AppCompatActivity() {
 
             // create Category-Entry from Entries in Items
             extractCategoriesFromItems(loadedData)
-            //
 
             GlobalScope.launch(Dispatchers.IO){
                 //appDb.entryDao().insert(entry)
                 appDb.itemDao().insertAll(loadedData)
             }
 
-
             val filename: String = getFileNameFromUri(uri.lastPathSegment.toString())
 
             saveToInternalAppStorage(loadedData, filename)
-            // extract filename form uri
-            //val filename: String = uri.lastPathSegment.toString().substring(uri.lastPathSegment.toString().lastIndexOf("/") + 1)
             Log.i("intention-filenameOnly", filename)
             Toast.makeText(applicationContext, "Einkaufsliste importiert", Toast.LENGTH_SHORT).show()
         }
@@ -120,7 +116,6 @@ class MainActivity : AppCompatActivity() {
             Toast.makeText(applicationContext, "Fehler beim Importieren der Liste: ${e.message}", Toast.LENGTH_SHORT).show()
             Log.e("intention",  "Intention-Error: ${e.message}")
         }
-        reloadFragment()
     }
 
     // gets the fileName from the uri without the extension .hai, the extension is created if the list is exported again later !
@@ -187,34 +182,8 @@ class MainActivity : AppCompatActivity() {
             out.println(gson.toJson(loadedData))}
     }
 
-    private fun reloadFragment()
-    {
-
-        /*val fragMgr: FragmentManager = supportFragmentManager
-        val fragTrans: FragmentTransaction = fragMgr.beginTransaction()
-
-        val myFragment = ShoppinglistFragment() //my custom fragment
-
-
-        fragTrans.replace(android.R.id.content, myFragment, "Tag")
-        fragTrans.addToBackStack(null)
-        //fragTrans.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
-        fragTrans.commit()*/
-        //intent.action = "None"
-        //finish();
-        //overridePendingTransition(0, 0);
-        //startActivity(intent);
-
-        //overridePendingTransition(0, 0);
-
-
-    }
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
-            R.id.action_settings -> {
-                // Handle the action_settings click here
-                true
-            }
             R.id.action_messenger -> {
                 openMessengerSendCurrentList(appDb,gson, context = this)
                 true

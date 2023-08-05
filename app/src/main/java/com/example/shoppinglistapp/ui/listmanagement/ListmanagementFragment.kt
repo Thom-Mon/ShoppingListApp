@@ -165,7 +165,6 @@ class ListmanagementFragment : Fragment() {
         {
             // if the input field is empty use the current shoppinglist and send this with currentdate
             openMessengerSendCurrentList(appDb, gson, requireContext())
-
         }
     }
 
