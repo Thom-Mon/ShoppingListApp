@@ -39,9 +39,8 @@ interface ItemDao {
     suspend fun insert(item: Item)
 
     // used for testing, to insert from List on Startup (dummy data)
-    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertAll(objects: List<Item>)
-
 
     @Delete
     suspend fun delete(item: Item)

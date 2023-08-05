@@ -33,11 +33,19 @@
        />
 
     <com.google.android.material.button.MaterialButton
-        android:id="@+id/btn_sendViaSignal"
+        android:id="@+id/btn_sendViaMessenger"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="15dp"
-        android:text="Send List by Signal"
+        android:text="Send via Messenger"
+        android:layout_gravity="center_horizontal"
+        />
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btn_openFilePicker"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="15dp"
+        android:text="Datei öffnen"
         android:layout_gravity="center_horizontal"
         />
 

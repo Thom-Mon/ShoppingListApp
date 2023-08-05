@@ -4,6 +4,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.Menu
+import android.view.MenuItem
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.drawerlayout.widget.DrawerLayout
@@ -207,5 +208,22 @@ class MainActivity : AppCompatActivity() {
         //overridePendingTransition(0, 0);
 
 
+    }
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            R.id.action_settings -> {
+                // Handle the action_settings click here
+                true
+            }
+            R.id.action_messenger -> {
+                openMessengerSendCurrentList(appDb,gson, context = this)
+                true
+            }
+            R.id.action_fileopen -> {
+                // Handle the action_fileopen click here
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
+        }
     }
 }

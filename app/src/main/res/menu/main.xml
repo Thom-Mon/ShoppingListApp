@@ -6,4 +6,14 @@
         android:orderInCategory="100"
         android:title="@string/action_settings"
         app:showAsAction="never" />
+    <item
+        android:id="@+id/action_messenger"
+        android:orderInCategory="100"
+        android:title="@string/action_messenger"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/action_fileopen"
+        android:orderInCategory="100"
+        android:title="@string/action_fileopen"
+        app:showAsAction="never" />
 </menu>

@@ -1,39 +1,40 @@
 package com.example.shoppinglistapp.ui.listmanagement
 
-import android.content.ActivityNotFoundException
-import android.content.Intent
-import android.content.res.ColorStateList
+import android.app.Activity
+import android.content.*
 import android.graphics.Color
+import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.os.Environment
+import android.provider.MediaStore
 import android.text.SpannableStringBuilder
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
-import androidx.core.content.ContentProviderCompat.requireContext
-import androidx.core.content.ContextCompat
+import androidx.annotation.RequiresApi
 import androidx.core.content.FileProvider
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.example.shoppinglistapp.AppDatabase
+import com.example.shoppinglistapp.*
 import com.example.shoppinglistapp.Dao.Category.Category
 import com.example.shoppinglistapp.Dao.Item.Item
-import com.example.shoppinglistapp.R
 import com.example.shoppinglistapp.adapter.CustomAdapter
 import com.example.shoppinglistapp.adapter.ElementsViewModel
 import com.example.shoppinglistapp.databinding.FragmentListmanagementBinding
-import com.example.shoppinglistapp.showConfirmationDialog
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.io.BufferedReader
 import java.io.File
 import java.io.FileOutputStream
+import java.io.InputStreamReader
 
 class ListmanagementFragment : Fragment() {
     private var _binding: FragmentListmanagementBinding? = null
@@ -41,6 +42,8 @@ class ListmanagementFragment : Fragment() {
     private var data = ArrayList<ElementsViewModel>()
     private val adapter = CustomAdapter(data)
     private val gson = Gson()
+    private val filePickerRequestCode = 42
+
     // This property is only valid between onCreateView and
     // onDestroyView.
     private val binding get() = _binding!!
@@ -76,8 +79,12 @@ class ListmanagementFragment : Fragment() {
             loadFromExternalStorage()
         }
 
-        binding.btnSendViaSignal.setOnClickListener {
+        binding.btnSendViaMessenger.setOnClickListener {
             openMessengerWithFile()
+        }
+
+        binding.btnOpenFilePicker.setOnClickListener {
+            openFilePickerDialog()
         }
 
         // recyclerview button listener Implementation
@@ -105,13 +112,33 @@ class ListmanagementFragment : Fragment() {
     }
 
 
+    fun openFilePickerDialog() {
+        val intent = Intent(Intent.ACTION_OPEN_DOCUMENT).apply {
+            addCategory(Intent.CATEGORY_OPENABLE)
+            type = "*/*" // Set the initial type to show all files
+        }
+        startActivityForResult(intent, filePickerRequestCode)
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+
+        if (requestCode == filePickerRequestCode && resultCode == Activity.RESULT_OK) {
+            // Handle the selected file URI here (data?.data)
+            loadFromFilePicker(data?.data)
+        }
+    }
+
+    /*
+    ** Opens the Messenger-Choose-Dialog to send the current shopping list, if there is text in the entry-field the app tries to send the file there
+    */
     private fun openMessengerWithFile() {
         if (binding.entryFilename.text!!.isNotEmpty()) {
             val filename = binding.entryFilename.text.toString()
             val file = File(requireContext().filesDir, filename)
 
             if (!file.exists()) {
-                // File does not exist, handle the error
+                // File does not exist, handle the error //TODO: MELDUNG AN USER FEHLT!
                 return
             }
             val uri = FileProvider.getUriForFile(
@@ -133,6 +160,12 @@ class ListmanagementFragment : Fragment() {
                 Toast.makeText(requireContext(), "No messaging app found.", Toast.LENGTH_SHORT)
                     .show()
             }
+        }
+        else
+        {
+            // if the input field is empty use the current shoppinglist and send this with currentdate
+            openMessengerSendCurrentList(appDb, gson, requireContext())
+
         }
     }
 
@@ -182,6 +215,7 @@ class ListmanagementFragment : Fragment() {
     private fun saveToExternalStorage(isExporting: Boolean = false)
     {
         var fileName = "Default"
+        val mimeType = "application/x-hai"
         //-> saving to JSON for easy get it back
         if(binding.entryFilename.text!!.isNotEmpty())
         {
@@ -215,9 +249,12 @@ class ListmanagementFragment : Fragment() {
                         FileOutputStream(File(requireContext().filesDir, fileName)).use { outputStream ->
                             outputStream.write(gson.toJson(entries).toByteArray())
                         }
-                        if(isExporting)
-                        {
-                            saveFileToDownloads(fileName,gson.toJson(entries))
+                        if (isExporting) {
+                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                                saveFileToDownloads(fileName, gson.toJson(entries))
+                            } else {
+                                saveFileLegacy(fileName, gson.toJson(entries))
+                            }
                         }
                     }
                 }
@@ -248,9 +285,6 @@ class ListmanagementFragment : Fragment() {
             return
         }
 
-        var currentIndex = 0
-        var firstEntryDatetime = ""
-
         try {
             val file = File(requireContext().filesDir,filename)
             val fileContents = file.readText()
@@ -273,6 +307,52 @@ class ListmanagementFragment : Fragment() {
             Toast.makeText(requireContext(), "Fehler beim Laden: Datei nicht gefunden!", Toast.LENGTH_SHORT).show()
         }
     }
+
+    private fun loadFromFilePicker(data: Uri?)
+    {
+        var loadedData = java.util.ArrayList<Item>()
+
+        if(data == null)
+        {
+            Toast.makeText(requireContext(), "Die Datei konnte nicht geladen werden", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        try {
+            val fileContents = readTextFromUri(data) // i guess data is the uri here?!
+            //Log.e("Mark_ Load",fileContents.toString())
+            val arrayListTutorialType = object : TypeToken<List<Item>>() {}.type
+            loadedData = gson.fromJson(fileContents, arrayListTutorialType)
+            //Log.e("mark_ Load Data",loadedData.toString())
+
+            // create Category-Entry from Entries in Items
+            extractCategoriesFromItems(loadedData)
+            //
+
+            GlobalScope.launch(Dispatchers.IO){
+                //appDb.entryDao().insert(entry)
+                appDb.itemDao().insertAll(loadedData)
+            }
+            Toast.makeText(requireContext(), "Datei geladen", Toast.LENGTH_SHORT).show()
+        }
+        catch (e: Exception){
+            Toast.makeText(requireContext(), "Fehler beim Laden: Datei nicht gefunden!", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    private fun readTextFromUri(uri: Uri): String {
+        val inputStream = requireContext().contentResolver.openInputStream(uri)
+        val reader = BufferedReader(InputStreamReader(inputStream))
+        val stringBuilder = StringBuilder()
+        var line: String?
+        while (reader.readLine().also { line = it } != null) {
+            stringBuilder.append(line)
+            stringBuilder.append("\n")
+        }
+        reader.close()
+        return stringBuilder.toString()
+    }
+
 
     private fun extractCategoriesFromItems(loadedData: java.util.ArrayList<Item>)
     {
@@ -311,16 +391,33 @@ class ListmanagementFragment : Fragment() {
     }
 
 
-    private fun saveFileToDownloads(filename : String, fileContent: String) {
-        // this is from another example it is working good better than any other example using the MediaStore, MediaStore might be overkill
-        try{
-            val f = File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS), filename+".hai")
-            f.delete()
-            f.appendText(fileContent)
-            Toast.makeText(requireContext(), "Speicherort: " + Environment.DIRECTORY_DOWNLOADS + "/" + filename+".hai", Toast.LENGTH_LONG).show()
-        } catch (e: Exception) {
-            Toast.makeText(requireContext(), "Fehler beim Speichern der Liste. Rechte vorhanden?", Toast.LENGTH_LONG).show()
+    @RequiresApi(Build.VERSION_CODES.Q)
+    private fun saveFileToDownloads(fileName: String, fileContent: String) {
+        val contentValues = ContentValues().apply {
+            put(MediaStore.MediaColumns.DISPLAY_NAME, fileName)
+            put(MediaStore.MediaColumns.MIME_TYPE, "application/x-hai")
+            put(MediaStore.MediaColumns.RELATIVE_PATH, Environment.DIRECTORY_DOWNLOADS)
         }
 
+        val resolver: ContentResolver = requireContext().contentResolver
+        val uri = resolver.insert(MediaStore.Downloads.EXTERNAL_CONTENT_URI, contentValues)
+
+        uri?.let { uri ->
+            resolver.openOutputStream(uri)?.let { outputStream ->
+                outputStream.write(fileContent.toByteArray())
+                outputStream.flush()
+                outputStream.close()
+            }
+        }
+    }
+
+    private fun saveFileLegacy(fileName: String, fileContent: String) {
+        val downloadsDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
+        val file = File(downloadsDir, fileName)
+        FileOutputStream(file).use { outputStream ->
+            outputStream.write(fileContent.toByteArray())
+            outputStream.flush()
+            outputStream.close()
+        }
     }
 }

@@ -28,5 +28,7 @@
     <string name="dialog_list_deletion_warning_text">Wollen Sie die Liste wirklich löschen?</string>
     <string name="dialog_shoppinglist_deletion_warning_text">Wollen Sie die aktuelle Einkaufsliste wirklich löschen?</string>
     <string name="dialog_item_deletion_warning_text">Wollen Sie das Produkt wirklich endgültig löschen?</string>
+    <string name="action_messenger">Per Messenger versenden</string>
+    <string name="action_fileopen">Datei öffnen</string>
 
 </resources>
