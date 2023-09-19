@@ -1,6 +1,8 @@
 package com.example.shoppinglistapp
 
+import android.app.Activity
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import android.view.Menu
@@ -32,6 +34,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
     private  lateinit var appDb : AppDatabase
     private val gson = Gson()
+    private val filePickerRequestCode_Main = 42
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -190,9 +193,59 @@ class MainActivity : AppCompatActivity() {
             }
             R.id.action_fileopen -> {
                 // Handle the action_fileopen click here
+                openFilePickerDialog()
                 true
             }
             else -> super.onOptionsItemSelected(item)
+        }
+    }
+
+    fun openFilePickerDialog() {
+        val intent = Intent(Intent.ACTION_OPEN_DOCUMENT).apply {
+            addCategory(Intent.CATEGORY_OPENABLE)
+            type = "*/*" // Set the initial type to show all files
+        }
+        startActivityForResult(intent, filePickerRequestCode_Main)
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+
+        if (requestCode == filePickerRequestCode_Main && resultCode == Activity.RESULT_OK) {
+            // Handle the selected file URI here (data?.data)
+            loadFromFilePicker(data?.data)
+        }
+    }
+
+    private fun loadFromFilePicker(data: Uri?)
+    {
+        var loadedData = java.util.ArrayList<Item>()
+
+        if(data == null)
+        {
+            Toast.makeText(this, "Die Datei konnte nicht geladen werden", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        try {
+            val fileContents = readTextFromUri(this,data) // i guess data is the uri here?!
+            //Log.e("Mark_ Load",fileContents.toString())
+            val arrayListTutorialType = object : TypeToken<List<Item>>() {}.type
+            loadedData = gson.fromJson(fileContents, arrayListTutorialType)
+            //Log.e("mark_ Load Data",loadedData.toString())
+
+            // create Category-Entry from Entries in Items
+            extractCategoriesFromItems(loadedData)
+            //
+
+            GlobalScope.launch(Dispatchers.IO){
+                //appDb.entryDao().insert(entry)
+                appDb.itemDao().insertAll(loadedData)
+            }
+            Toast.makeText(this, "Datei geladen", Toast.LENGTH_SHORT).show()
+        }
+        catch (e: Exception){
+            Toast.makeText(this, "Fehler beim Laden: Datei nicht gefunden!", Toast.LENGTH_SHORT).show()
         }
     }
 }

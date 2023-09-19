@@ -6,6 +6,7 @@ import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
+import android.net.Uri
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.LayoutInflater
@@ -14,17 +15,19 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
-import androidx.core.app.ActivityCompat.startActivityForResult
 import androidx.core.content.FileProvider
 import androidx.fragment.app.Fragment
 import com.example.shoppinglistapp.Dao.Item.Item
 import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.io.BufferedReader
 import java.io.File
 import java.io.FileOutputStream
+import java.io.InputStreamReader
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -170,4 +173,20 @@ fun Fragment.hideKeyboard() {
             // For example, show an error message or take appropriate action.
         }
     }
+
+    fun readTextFromUri(context: Context,uri: Uri): String {
+    val inputStream = context.contentResolver.openInputStream(uri)
+    val reader = BufferedReader(InputStreamReader(inputStream))
+    val stringBuilder = StringBuilder()
+    var line: String?
+    while (reader.readLine().also { line = it } != null) {
+        stringBuilder.append(line)
+        stringBuilder.append("\n")
+    }
+    reader.close()
+    return stringBuilder.toString()
+}
+
+
+
 
