@@ -25,6 +25,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import retrofit2.Callback
 
 
 class ShoppinglistFragment : Fragment() {
@@ -36,7 +37,7 @@ class ShoppinglistFragment : Fragment() {
 
 
     // This property is only valid between onCreateView and
-    // onDestroyView.
+    // onDestroyView
     private val binding get() = _binding!!
 
     override fun onCreateView(
@@ -108,6 +109,11 @@ class ShoppinglistFragment : Fragment() {
 
         // this needs some rework the Dialog is not really generic enough
         product_layout.findViewById<ImageButton>(R.id.buttonEdit_product).setOnClickListener {
+            Log.e("mark_ ", "item current name: " + item.name)
+            Log.e("mark_ ", "item current id: " + item.id)
+            Log.e("mark_ ", "item current category: " + item.category)
+
+
             showEditDialog(requireContext(), R.layout.dialog_edit_item, item.name!!) { newText ->
                 // write new name to Db
                 updateItem(newText, item.id!!)
@@ -135,7 +141,7 @@ class ShoppinglistFragment : Fragment() {
         shoppinglist_layout.addView(product_layout);
     }
 
-    private fun getLastInsertedId(){
+    private fun getLastInsertedId(callback: () -> Unit){
         lateinit var items: List<Item>
 
         GlobalScope.launch {
@@ -154,6 +160,7 @@ class ShoppinglistFragment : Fragment() {
                     }
 
                 }
+                callback()
             }
         }
     }
@@ -191,21 +198,25 @@ class ShoppinglistFragment : Fragment() {
     private fun addProduct(category: Category,addProduct_layout: View,shoppinglist_layout: LinearLayout){
         val productname = addProduct_layout.findViewById<EditText>(R.id.editText_Item_Name).text
 
-        getLastInsertedId()
+
         val newItem = Item(null, productname.toString(), category.name,0 )
         // add the item just before the plus-button position
-        insertItemToDb(newItem)
+        insertItemToDb(newItem){
+            getLastInsertedId(){
+                Log.i("mark_", "lastInsertedId: " + lastInsertedItem.id + "name: " + productname.toString() + " category: " + category.name)
+                val newShowItem = Item(lastInsertedItem.id,productname.toString(), category.name,0)
+                addItemToView(newShowItem, shoppinglist_layout.indexOfChild(addProduct_layout))
+                productname.clear()
+            }
+        }
         hideKeyboard()
-
-        val newShowItem = Item(lastInsertedItem.id,productname.toString(), category.name,0)
-        addItemToView(newShowItem, shoppinglist_layout.indexOfChild(addProduct_layout))
-        productname.clear()
     }
 
-    private fun insertItemToDb(item: Item)
+    private fun insertItemToDb(item: Item, callback: () -> Unit)
     {
         GlobalScope.launch {
             appDb.itemDao().insert(item)
+            callback()
         }
     }
 
