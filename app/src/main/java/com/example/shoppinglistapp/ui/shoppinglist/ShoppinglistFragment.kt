@@ -235,8 +235,10 @@ class ShoppinglistFragment : Fragment() {
             val itemFromDb = appDb.itemDao().findByNameAndCategory(item.name!!, item.category!!)
             // only update status if the item is new to DB with this category
             if(itemFromDb == null){
+                Log.i("mark_", "Item is updated")
                 appDb.itemDao().updateStatus(item.id!!,1)
             } else {
+                Log.i("mark_", "Item is delete instantly item was" + item.name)
                 appDb.itemDao().delete(item)
             }
         }

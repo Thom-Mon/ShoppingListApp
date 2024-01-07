@@ -63,6 +63,12 @@ class SettingsFragment : Fragment() {
             }
         }
 
+        binding.btnRemoveDoubleFromDb.setOnClickListener {
+            showConfirmationDialog("Doppelte Entfernen", getString(R.string.dialog_shoppinglist_deletion_doubles_warning_text)) {
+                deleteDoubles()
+            }
+        }
+
         binding.btnCallApi.setOnClickListener {
             callApiGetCategory()
             callApiGetItems()
@@ -124,6 +130,12 @@ class SettingsFragment : Fragment() {
         GlobalScope.launch {
             appDb.itemDao().deleteAll()
             appDb.categoryDao().deleteAll()
+        }
+    }
+
+    fun deleteDoubles(){
+        GlobalScope.launch {
+            appDb.itemDao().deleteDoubles()
         }
     }
 
