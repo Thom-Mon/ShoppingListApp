@@ -26,8 +26,11 @@ interface ItemDao {
     suspend fun findByStatus(status: Int): List<Item>
 
     // This function is used to determine if a item needs to be created or updated
-    @Query("SELECT * FROM item_table WHERE category LIKE :name Limit 1")
-    suspend fun findByName(name: String): Item
+    @Query("" +
+            "SELECT * FROM item_table " +
+            "WHERE name LIKE :name " +
+            "AND category LIKE :category LIMIT 1")
+    suspend fun findByNameAndCategory(name: String, category: String): Item
 
     @Query("SELECT * FROM item_table WHERE id LIKE :id LIMIT 1")
     suspend fun findById(id: Int): Item

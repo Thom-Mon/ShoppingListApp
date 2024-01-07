@@ -1,13 +1,10 @@
 package com.example.shoppinglistapp.ui.shoppinglist
 
-import android.app.Activity
-import android.content.Context
 import android.os.Bundle
 import android.os.Handler
 import android.util.Log
 import android.view.*
 import android.view.animation.AnimationUtils
-import android.view.inputmethod.InputMethodManager
 import android.widget.*
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
@@ -25,7 +22,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import retrofit2.Callback
 
 
 class ShoppinglistFragment : Fragment() {
@@ -104,7 +100,7 @@ class ShoppinglistFragment : Fragment() {
         //get the checkbox to do something on checked
         product_layout.findViewById<CheckBox>(R.id.deletion_checkbox).setOnCheckedChangeListener {
             compoundButton, b ->
-            removeItem(product_layout, item.id!!)
+            removeItem(product_layout, item!!)
         }
 
         // this needs some rework the Dialog is not really generic enough
@@ -198,7 +194,6 @@ class ShoppinglistFragment : Fragment() {
     private fun addProduct(category: Category,addProduct_layout: View,shoppinglist_layout: LinearLayout){
         val productname = addProduct_layout.findViewById<EditText>(R.id.editText_Item_Name).text
 
-
         val newItem = Item(null, productname.toString(), category.name,0 )
         // add the item just before the plus-button position
         insertItemToDb(newItem){
@@ -227,7 +222,7 @@ class ShoppinglistFragment : Fragment() {
         }
     }
 
-    private fun removeItem(view: View, id: Int )
+    private fun removeItem(view: View, item: Item)
     {
         val animationFadeOut = AnimationUtils.loadAnimation(context, R.anim.item_animation_zoom)
         view.startAnimation(animationFadeOut)
@@ -236,8 +231,14 @@ class ShoppinglistFragment : Fragment() {
         }, 300)
 
         GlobalScope.launch {
-            appDb.itemDao().updateStatus(id,1)
-            //deleteData(elementsViewModel.id.toInt())
+            //add here a name check is there is already an element in that category with that name it is not added to the standard but is deleted instanstly
+            val itemFromDb = appDb.itemDao().findByNameAndCategory(item.name!!, item.category!!)
+            // only update status if the item is new to DB with this category
+            if(itemFromDb == null){
+                appDb.itemDao().updateStatus(item.id!!,1)
+            } else {
+                appDb.itemDao().delete(item)
+            }
         }
     }
 
