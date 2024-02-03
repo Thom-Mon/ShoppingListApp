@@ -109,7 +109,13 @@ class ShoppinglistFragment : Fragment() {
 
         // this needs some rework the Dialog is not really generic enough
         product_layout.findViewById<ImageButton>(R.id.buttonEdit_product).setOnClickListener {
-            showEditDialog(requireContext(), R.layout.dialog_edit_item, item.name!!, item.importance!!) { newText, newImportance ->
+            // Legacy support prevented migration! :-D
+            var importanceLevel = 0
+            if(item.importance != null && item.importance != 0){
+                importanceLevel = 1
+            }
+
+            showEditDialog(requireContext(), R.layout.dialog_edit_item, item.name!!, importanceLevel) { newText, newImportance ->
                 // write new name to Db
                 updateItem(newText, newImportance, item.id!!)
 
