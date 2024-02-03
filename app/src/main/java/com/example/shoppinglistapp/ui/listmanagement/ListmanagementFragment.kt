@@ -91,15 +91,24 @@ class ListmanagementFragment : Fragment() {
         adapter.setWhenClickListener(object : CustomAdapter.OnItemsClickListener {
             override fun onItemClick(position: Int, elementsViewModel: ElementsViewModel, buttonId: Int, filename: String) {
                 if(buttonId == 1){
+                    // Click on Element Button
                     if(filename.isNotEmpty())
                     {
                         binding.entryFilename.setText(filename)
                     }
                 }
                 else if(buttonId == 0){
+                    // Delete Button
                     showConfirmationDialog("Liste löschen", getString(R.string.dialog_list_deletion_warning_text)){
                         deleteInternalFile(filename)
                         refreshRecyclerView()
+                    }
+                }
+                else if(buttonId == 2){
+                    // Edit Button (Placeholder is unused)
+                    if(filename.isNotEmpty())
+                    {
+                        binding.entryFilename.setText(filename)
                     }
 
                 }
@@ -197,10 +206,9 @@ class ListmanagementFragment : Fragment() {
             data.add(
                 ElementsViewModel(index, SpannableStringBuilder(file).toString())
             )
-            adapter.notifyItemInserted(data.size-1)
-            binding.recyclerviewFiles.scheduleLayoutAnimation()
             index++
         }
+        adapter.notifyDataSetChanged()
     }
 
     private fun insertResponseToDB(responseBody: List<Category>)
@@ -213,7 +221,7 @@ class ListmanagementFragment : Fragment() {
 
     private fun saveToExternalStorage(isExporting: Boolean = false)
     {
-        var fileName = "Default"
+        var fileName = "Einkaufsliste_" + getCurrentDate() + ".hai"
         val mimeType = "application/x-hai"
         //-> saving to JSON for easy get it back
         if(binding.entryFilename.text!!.isNotEmpty())

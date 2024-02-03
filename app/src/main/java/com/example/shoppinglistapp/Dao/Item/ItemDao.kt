@@ -26,8 +26,12 @@ interface ItemDao {
     suspend fun findByStatus(status: Int): List<Item>
 
     // This function is used to determine if a item needs to be created or updated
-    @Query("SELECT * FROM item_table WHERE category LIKE :name Limit 1")
-    suspend fun findByName(name: String): Item
+    @Query("" +
+            "SELECT * FROM item_table " +
+            "WHERE name LIKE :name " +
+            "AND category LIKE :category " +
+            "AND status = 1 LIMIT 1")
+    suspend fun findByNameAndCategory(name: String, category: String): Item
 
     @Query("SELECT * FROM item_table WHERE id LIKE :id LIMIT 1")
     suspend fun findById(id: Int): Item
@@ -53,6 +57,16 @@ interface ItemDao {
 
     @Delete
     suspend fun deleteItems(objects: List<Item>)
+
+    @Query("""DELETE FROM item_table 
+            WHERE EXISTS (
+            SELECT 1 FROM item_table p2 
+            WHERE item_table.name = p2.name
+            AND item_table.category = p2.category
+            AND item_table.status = p2.status
+            AND item_table.id > p2.id 
+            );""")
+    suspend fun deleteDoubles()
 
     @Query("UPDATE item_table SET name=:name, category=:category, status=:status WHERE id = :id")
     suspend fun update(id: Int, name : String , category: String , status: Int)

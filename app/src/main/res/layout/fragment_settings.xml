@@ -37,6 +37,14 @@
             android:text="Download"
         />
         <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_remove_double_from_db"
+            android:layout_width="250sp"
+            android:layout_height="wrap_content"
+            android:text="Doppelte Entfernen"
+            app:iconGravity="textStart"
+            app:icon="@drawable/ic_baseline_delete_forever_20"
+            />
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/btn_delete_db"
             android:layout_width="250sp"
             android:layout_height="wrap_content"
@@ -62,7 +70,7 @@
         android:gravity="center"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="150sp"
+        android:layout_marginBottom="200sp"
         android:text="Optionen auf aktuelle Einkaufsliste"
         android:textSize="24sp"
         app:layout_constraintBottom_toBottomOf="parent"
