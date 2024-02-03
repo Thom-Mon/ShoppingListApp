@@ -109,12 +109,13 @@ class ShoppinglistFragment : Fragment() {
 
         // this needs some rework the Dialog is not really generic enough
         product_layout.findViewById<ImageButton>(R.id.buttonEdit_product).setOnClickListener {
-            showEditDialog(requireContext(), R.layout.dialog_edit_item, item.name!!) { newText ->
+            showEditDialog(requireContext(), R.layout.dialog_edit_item, item.name!!, item.importance!!) { newText, newImportance ->
                 // write new name to Db
-                updateItem(newText, item.id!!)
+                updateItem(newText, newImportance, item.id!!)
 
                 // updating the view with new name
                 product_layout.findViewById<TextView>(R.id.textView_product).text = newText
+                product_layout.findViewById<ImageButton>(R.id.button_label_not_important).visibility = if(newImportance == 1) View.VISIBLE else View.INVISIBLE
             }
         }
 
@@ -212,10 +213,10 @@ class ShoppinglistFragment : Fragment() {
         }
     }
 
-    private fun updateItem(name: String, id: Int)
+    private fun updateItem(name: String, importance: Int, id: Int)
     {
         GlobalScope.launch {
-            appDb.itemDao().updateItemName(name, id)
+            appDb.itemDao().updateItemName(name, importance, id)
         }
     }
 

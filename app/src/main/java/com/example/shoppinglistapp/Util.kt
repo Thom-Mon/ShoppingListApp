@@ -13,6 +13,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.Button
+import android.widget.CheckBox
 import android.widget.EditText
 import android.widget.Toast
 import androidx.core.content.FileProvider
@@ -68,7 +69,8 @@ fun Fragment.hideKeyboard() {
         context: Context,
         layoutId: Int,
         initialText: String,
-        onSave: (newText: String) -> Unit
+        initialImportance: Int?,
+        onSave: (newText: String, newImportance: Int) -> Unit
     ) {
         val dialogView = LayoutInflater.from(context).inflate(layoutId, null)
         val dialog = AlertDialog.Builder(context)
@@ -77,13 +79,17 @@ fun Fragment.hideKeyboard() {
             .create()
 
         val editText: EditText = dialogView.findViewById(R.id.editText)
+        val checkBoxImportance: CheckBox = dialogView.findViewById((R.id.checkbox_importance))
         val saveButton: Button = dialogView.findViewById(R.id.saveButton)
 
         // Set the initial text in the EditText
         editText.setText(initialText)
+        if(initialImportance != null && initialImportance != 0){
+            checkBoxImportance.isChecked = true
+        }
 
         // TextWatcher Element to use on editText - only save if the textinput is not empty
-        class MyTextWatcher : TextWatcher {
+        class MyTextItemWatcher : TextWatcher {
             override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
             }
 
@@ -96,13 +102,14 @@ fun Fragment.hideKeyboard() {
         }
 
         // disable the save button if there is not text in the edittext provided
-        editText.addTextChangedListener(MyTextWatcher())
+        editText.addTextChangedListener(MyTextItemWatcher())
 
         // Save button click listener
         saveButton.setOnClickListener {
             val newText = editText.text.toString()
+            val newImportance = if(checkBoxImportance.isChecked) 1 else 0
             // Call the provided onSave callback to handle the saved data
-            onSave(newText)
+            onSave(newText, newImportance)
 
             // Dismiss the dialog
             dialog.dismiss()
@@ -111,6 +118,54 @@ fun Fragment.hideKeyboard() {
         // Show the dialog
         dialog.show()
     }
+
+fun Fragment.showEditDialog(
+    context: Context,
+    layoutId: Int,
+    initialText: String,
+    onSave: (newText: String) -> Unit
+) {
+    val dialogView = LayoutInflater.from(context).inflate(layoutId, null)
+    val dialog = AlertDialog.Builder(context)
+        .setView(dialogView)
+        .setCancelable(true)
+        .create()
+
+    val editText: EditText = dialogView.findViewById(R.id.editText)
+    val saveButton: Button = dialogView.findViewById(R.id.saveButton)
+
+    // Set the initial text in the EditText
+    editText.setText(initialText)
+
+    // TextWatcher Element to use on editText - only save if the textinput is not empty
+    class MyTextWatcher : TextWatcher {
+        override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+        }
+
+        override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+        }
+
+        override fun afterTextChanged(s: Editable?) {
+            val text = s?.toString()
+            saveButton.isEnabled = !text.isNullOrEmpty()}
+    }
+
+    // disable the save button if there is not text in the edittext provided
+    editText.addTextChangedListener(MyTextWatcher())
+
+    // Save button click listener
+    saveButton.setOnClickListener {
+        val newText = editText.text.toString()
+        // Call the provided onSave callback to handle the saved data
+        onSave(newText)
+
+        // Dismiss the dialog
+        dialog.dismiss()
+    }
+
+    // Show the dialog
+    dialog.show()
+}
 
     fun getCurrentDate(): String {
         val dateFormat = SimpleDateFormat("dd-MM-yyyy", Locale.getDefault())
