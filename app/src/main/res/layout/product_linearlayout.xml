@@ -26,7 +26,15 @@
         android:src="@drawable/ic_baseline_edit_24"
         android:layout_marginStart="10sp"
         android:background="@null"
-
+        />
+    <ImageButton
+        android:id="@+id/button_label_not_important"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/ic_baseline_watch_later_24"
+        android:layout_marginStart="10sp"
+        android:background="@null"
+        android:visibility="invisible"
         />
 
 

@@ -31,7 +31,7 @@ class ShoppinglistFragment : Fragment() {
 
     private var _binding: FragmentShoppinglistBinding? = null
     private  lateinit var appDb : AppDatabase
-    private var lastInsertedItem = Item(7777,"Fruchttiger","Grundnahrungsmittel",0)
+    private var lastInsertedItem = Item(7777,"Fruchttiger","Grundnahrungsmittel",0,0)
     private val gson = Gson()
 
 
@@ -93,12 +93,13 @@ class ShoppinglistFragment : Fragment() {
     * Within here the checkbox logic is design thats why i did the listener on the edit-button in there too
     * */
     private fun addItemToView(item: Item, index: Int = 0) {
-
-
         val product_layout = getLayoutInflater().inflate(R.layout.product_linearlayout, null, false)
         val shoppinglist_layout = binding.layoutShoppingList
 
         product_layout.findViewById<TextView>(R.id.textView_product).text = item.name
+        if(item.importance != 0 && item.importance != null){
+            product_layout.findViewById<ImageButton>(R.id.button_label_not_important).visibility = View.VISIBLE
+        }
 
         //get the checkbox to do something on checked
         product_layout.findViewById<CheckBox>(R.id.deletion_checkbox).setOnCheckedChangeListener {
@@ -190,16 +191,18 @@ class ShoppinglistFragment : Fragment() {
     // adding the product within the category
     private fun addProduct(category: Category,addProduct_layout: View,shoppinglist_layout: LinearLayout){
         val productname = addProduct_layout.findViewById<EditText>(R.id.editText_Item_Name).text
+        val importance = if(addProduct_layout.findViewById<CheckBox>(R.id.checkbox_importance).isChecked) 1 else 0
 
         getLastInsertedId()
-        val newItem = Item(null, productname.toString(), category.name,0 )
+        val newItem = Item(null, productname.toString(), category.name,0 ,importance)
         // add the item just before the plus-button position
         insertItemToDb(newItem)
         hideKeyboard()
 
-        val newShowItem = Item(lastInsertedItem.id,productname.toString(), category.name,0)
+        val newShowItem = Item(lastInsertedItem.id,productname.toString(), category.name,0,importance)
         addItemToView(newShowItem, shoppinglist_layout.indexOfChild(addProduct_layout))
         productname.clear()
+        addProduct_layout.findViewById<CheckBox>(R.id.checkbox_importance).isChecked = false
     }
 
     private fun insertItemToDb(item: Item)

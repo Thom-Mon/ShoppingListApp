@@ -23,4 +23,13 @@
         android:maxLength="40"
         android:textSize="15dp"
         />
+    <CheckBox
+        android:id="@+id/checkbox_importance"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        />
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Geringe Priorität"/>
 </LinearLayout>
